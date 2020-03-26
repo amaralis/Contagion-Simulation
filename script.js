@@ -8,9 +8,7 @@ canvas.height = "500"
 const pauseButton = document.querySelector("#pause")
 pauseButton.addEventListener("click", () => {
   pauseButton.classList.toggle("paused")
-  if (pauseButton.classList.contains("paused")) {
-    return
-  } else {
+  if (!pauseButton.classList.contains("paused")) {
     animate()
   }
 })
@@ -83,9 +81,7 @@ const myCircle = new Circle(
 console.log(myCircle)
 
 function animate() {
-  if (pauseButton.classList.contains("paused")) {
-    return
-  } else {
+  if (!pauseButton.classList.contains("paused")) {
     ctx.clearRect(0, 0, innerWidth, innerHeight)
     myCircle.update()
     myCircle.draw()
