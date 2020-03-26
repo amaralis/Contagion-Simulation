@@ -5,10 +5,22 @@ const ctx = /** @type {HTMLCanvasElement} */ canvas.getContext("2d")
 canvas.width = "500"
 canvas.height = "500"
 
+const pauseButton = document.querySelector("#pause")
+pauseButton.addEventListener("click", () => {
+  pauseButton.classList.toggle("paused")
+  if (pauseButton.classList.contains("paused")) {
+    return
+  } else {
+    animate()
+  }
+})
+
 const circleRadius = 50
 const startAngle = 0
 const endAngle = Math.PI * 2
 const counterClockwise = false
+
+pause = function() {}
 
 class Circle {
   constructor(x, y, radius, startAngle, endAngle, cc) {
@@ -18,8 +30,8 @@ class Circle {
     this.startAngle = startAngle
     this.endAngle = endAngle
     this.cc = cc
-    this.vX = Math.round(Math.random()) * 2 - 1
-    this.vY = Math.round(Math.random()) * 2 - 1
+    this.vX = /*Math.round(Math.random()) * 2 - 1*/ (Math.random() - 0.5) * 2
+    this.vY = /*Math.round(Math.random()) * 2 - 1*/ (Math.random() - 0.5) * 2
   }
 
   draw = function() {
@@ -32,8 +44,10 @@ class Circle {
       this.endAngle,
       this.cc
     )
-    ctx.strokeStyle = "red"
-    ctx.stroke()
+    // ctx.strokeStyle = "red"
+    // ctx.stroke()
+    ctx.fillStyle = "rgba(0, 255, 0, 0.8)"
+    ctx.fill()
   }
 
   update = function() {
@@ -69,10 +83,14 @@ const myCircle = new Circle(
 console.log(myCircle)
 
 function animate() {
-  ctx.clearRect(0, 0, innerWidth, innerHeight)
-  myCircle.update()
-  myCircle.draw()
-  requestAnimationFrame(animate)
+  if (pauseButton.classList.contains("paused")) {
+    return
+  } else {
+    ctx.clearRect(0, 0, innerWidth, innerHeight)
+    myCircle.update()
+    myCircle.draw()
+    requestAnimationFrame(animate)
+  }
 }
 
-//animate()
+animate()
