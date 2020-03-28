@@ -8,21 +8,22 @@ canvas.height = "500"
 /** Add agents with click */
 
 canvas.addEventListener("click", () => {
-  tempAgentArray.push(
-    new Circle(
-      /*Math.round(
-        Math.random() * (canvas.width - circleRadius * 2) + circleRadius
-      ),
-      Math.round(
-        Math.random() * (canvas.height - circleRadius * 2) + circleRadius
-      ),*/ 450,
-      450,
-      circleRadius,
-      0,
-      Math.PI * 2,
-      false
+  for (let i = 0; i < 10; i++) {
+    quadtreeRoot.population.push(
+      new Circle(
+        Math.round(
+          Math.random() * (canvas.width - circleRadius * 2) + circleRadius
+        ),
+        Math.round(
+          Math.random() * (canvas.height - circleRadius * 2) + circleRadius
+        ),
+        circleRadius,
+        0,
+        Math.PI * 2,
+        false
+      )
     )
-  )
+  }
 })
 
 /** Pause feature */
@@ -36,7 +37,7 @@ pauseButton.addEventListener("click", () => {
 
 /** Global consts */
 
-const circleRadius = 5
+const circleRadius = 2
 const startAngle = 0
 const endAngle = Math.PI * 2
 const counterClockwise = false
@@ -46,7 +47,7 @@ let tempAgentArray = []
 /** Quadtree class */
 
 class Quadtree {
-  constructor(x, y, w, h, parent) {
+  constructor(x, y, w, h, parent, name) {
     this.x = x
     this.y = y
     this.width = w
@@ -55,6 +56,7 @@ class Quadtree {
     this.population = []
     this.populationCap = 6
     this.isDivided = false
+    this.name = name
 
     this.parent = parent
     this.northwest = null
@@ -64,114 +66,158 @@ class Quadtree {
   }
 
   insertAgent = function(agent) {
-    /** Check if quadtree is not divided, then if the agent's coordinates fit inside it. */
-
-    // if (
-    //   !quadtree.isDivided &&
-    //   agent.x < quadtree.x + quadtree.width &&
-    //   agent.x >= quadtree.x &&
-    //   agent.y < quadtree.y + quadtree.height &&
-    //   agent.y >= quadtree.y
-    // ) {
     this.population.push(agent)
-    //}
   }
 
   update = function() {
-    if (!this.isDivided && this.population.length < this.populationCap) {
-      tempAgentArray.forEach(agent => {
-        /** Push agents into current quadtree - inconsistent */
-        console.log("Pushing agent")
-        this.population.push(agent)
-      })
-      console.log(this.population.length)
-    }
-    if (!this.isDivided && this.population.length == this.populationCap) {
-      console.log("Dividing tree") /** THIS IS NEVER HAPPENING */
-      this.isDivided = true
+    this.population.forEach(agent => {
+      // if (
+      //   agent.x >= this.x &&
+      //   agent.x < this.width &&
+      //   agent.y >= this.y &&
+      //   agent.y < this.width &&
+      //   this.population.length < this.populationCap
+      // ) {
+      //   console.log(`Pushing agents into current quadtree`)
+      //   this.population.push(agent)
 
-      this.northwest = new Quadtree(
-        this.x,
-        this.y,
-        this.width / 2,
-        this.height / 2,
-        this
-      )
-      this.northeast = new Quadtree(
-        this.width / 2,
-        this.y,
-        this.width / 2,
-        this.height / 2,
-        this
-      )
-      this.southwest = new Quadtree(
-        this.x,
-        this.height / 2,
-        this.width / 2,
-        this.height / 2,
-        this
-      )
-      this.southeast = new Quadtree(
-        this.width / 2,
-        this.height / 2,
-        this.width / 2,
-        this.height / 2,
-        this
-      )
+      // }
+      // console.log(`
+      // Agent's X coords = ${agent.x};
+      // Agent's Y coords = ${agent.y};
+      // ${this.name}Quadtree's starting X = ${this.x};
+      // ${this.name}Quadtree's ending X = ${this.x + this.width};
+      // ${this.name}Quadtree's starting Y = ${this.y};
+      // ${this.name}Quadtree's ending Y = ${this.y + this.height}
+      // `)
 
-      quadTreeArray.push(
-        this.northwest,
-        this.northeast,
-        this.southwest,
-        this.southeast
-      )
+      if (
+        agent.x >= this.x &&
+        agent.x < this.x + this.width &&
+        agent.y >= this.y &&
+        agent.y < this.y + this.height &&
+        this.population.length >= this.populationCap
+      ) {
+        // console.log("Dividing tree and deleting agents from parent")
+        this.isDivided = true
 
-      while (this.population.length > 0) {
-        /** Push agents into new quadtrees and delete them from parent quadtree */
-        if (
-          this.population[0].x < this.width / 2 &&
-          this.population[0].y < this.height / 2
-        ) {
-          console.log("Pushing agents into northwest")
-          this.northwest.population.push(this.population[0])
-          this.population.splice(this.population[0], 1)
-        } else if (
-          this.population[0].x >= this.width / 2 &&
-          this.population[0].y < this.height / 2
-        ) {
-          console.log("Pushing agents into northeast")
-          this.northeast.population.push(this.population[0])
-          this.population.splice(this.population[0], 1)
-        } else if (
-          this.population[0].x < this.width / 2 &&
-          this.population[0].y >= this.height / 2
-        ) {
-          console.log("Pushing agents into southwest")
-          this.southwest.population.push(this.population[0])
-          this.population.splice(this.population[0], 1)
-        } else if (
-          this.population[0].x >= this.width / 2 &&
-          this.population[0].y >= this.height / 2
-        ) {
-          console.log("Pushing agents into southeast")
-          this.southeast.population.push(this.population[0])
-          this.population.splice(this.population[0], 1)
-        }
-        console.log(this.population.length)
-        console.log(
-          `Northwest population = ${this.northwest.population.length}, Northeast population = ${this.northeast.population.length}, Southwest population = ${this.southwest.population.length}, Southeast population = ${this.southeast.population.length}`
+        this.northwest = new Quadtree(
+          this.x,
+          this.y,
+          this.width / 2,
+          this.height / 2,
+          this,
+          "norhtwest"
         )
+        this.northeast = new Quadtree(
+          this.x + this.width / 2,
+          this.y,
+          this.width / 2,
+          this.height / 2,
+          this,
+          "northeast"
+        )
+        this.southwest = new Quadtree(
+          this.x,
+          this.y + this.height / 2,
+          this.width / 2,
+          this.height / 2,
+          this,
+          "southwest"
+        )
+        this.southeast = new Quadtree(
+          this.x + this.width / 2,
+          this.y + this.height / 2,
+          this.width / 2,
+          this.height / 2,
+          this,
+          "southeast"
+        )
+
+        // console.log(
+        //   `Pushing quadtrees into quadtree array, which is of length ${quadTreeArray.length}`
+        // )
+        quadTreeArray.push(
+          this.northwest,
+          this.northeast,
+          this.southwest,
+          this.southeast
+        )
+        // console.log(`Quadtree array length = ${quadTreeArray.length}`)
+
+        while (this.population.length > 0) {
+          /** Push agents into new quadtrees and delete them from parent quadtree */
+          if (
+            // this.population[0].x < this.width / 2 &&
+            // this.population[0].y < this.height / 2
+
+            this.population[0].x >= this.x &&
+            this.population[0].x < this.x + this.width / 2 &&
+            this.population[0].y >= this.y &&
+            this.population[0].y < this.y + this.height / 2
+          ) {
+            // console.log("Pushing agents into northwest")
+            this.northwest.population.push(this.population[0])
+            this.population.shift()
+          } else if (
+            // this.population[0].x >= this.width / 2 &&
+            // this.population[0].y < this.height / 2
+
+            this.population[0].x >= this.x + this.width / 2 &&
+            this.population[0].x < this.x + this.width &&
+            this.population[0].y >= this.y &&
+            this.population[0].y < this.y + this.height / 2
+          ) {
+            // console.log("Pushing agents into northeast")
+            this.northeast.population.push(this.population[0])
+            this.population.shift()
+          } else if (
+            // this.population[0].x < this.width / 2 &&
+            // this.population[0].y >= this.height / 2
+
+            this.population[0].x >= this.x &&
+            this.population[0].x < this.x + this.width / 2 &&
+            this.population[0].y >= this.y + this.height / 2 &&
+            this.population[0].y < this.y + this.height
+          ) {
+            // console.log("Pushing agents into southwest")
+            this.southwest.population.push(this.population[0])
+            this.population.shift()
+          } else if (
+            // this.population[0].x >= this.width / 2 &&
+            // this.population[0].y >= this.height / 2
+
+            this.population[0].x >= this.x + this.width / 2 &&
+            this.population[0].x < this.x + this.width &&
+            this.population[0].y >= this.y + this.height / 2 &&
+            this.population[0].y < this.y + this.height
+          ) {
+            // console.log("Pushing agents into southeast")
+            this.southeast.population.push(this.population[0])
+            this.population.shift()
+          }
+          // quadTreeArray.forEach(quadtree => {
+          //   console.log(
+          //     `${quadtree.name} population = ${quadtree.population.length}`
+          //   )
+          // })
+          // console.log(quadTreeArray.length)
+        }
+
+        // console.log(`Updating northwest`)
+        this.northwest.update()
+        // console.log(`Updating northeast`)
+        this.northeast.update()
+        // console.log(`Updating southwest`)
+        this.southwest.update()
+        // console.log(`Updating southeast`)
+        this.southeast.update()
       }
-    }
+    })
   }
 
   draw = function() {
-    if (this.population.length > 2) {
-      ctx.strokeStyle = "rgba(255,0,0,1)"
-      ctx.lineWidth = 5
-    } else {
-      ctx.strokeStyle = "rgba(0,255,0,1)"
-    }
+    ctx.strokeStyle = "rgba(0,255,0,1)"
     ctx.strokeRect(this.x, this.y, this.width, this.height)
     ctx.lineWidth = 1
   }
@@ -179,7 +225,7 @@ class Quadtree {
 
 /** Instantiate quadtree root */
 
-quadtreeRoot = new Quadtree(0, 0, canvas.width, canvas.height)
+quadtreeRoot = new Quadtree(0, 0, canvas.width, canvas.height, null, "root")
 quadTreeArray.push(quadtreeRoot)
 
 /** Agent/Circle class */
@@ -206,7 +252,7 @@ class Circle {
       this.endAngle,
       this.cc
     )
-    ctx.fillStyle = "rgba(0, 255, 0, 0.8)"
+    ctx.fillStyle = "rgba(240, 0, 0, 0.8)"
     ctx.fill()
   }
 
@@ -221,19 +267,6 @@ class Circle {
 
     this.y += this.vY
     this.x += this.vX
-
-    /** Check if quadtree is not divided, then if the agent's coordinates fit inside it. */
-    // quadTreeArray.forEach(quadtree => {
-    //   if (
-    //     !quadtree.isDivided &&
-    //     this.x < quadtree.x + quadtree.width &&
-    //     this.x >= quadtree.x &&
-    //     this.y < quadtree.y + quadtree.height &&
-    //     this.y >= quadtree.y
-    //   ) {
-    //     quadtree.population.push(this)
-    //   }
-    // })
   }
 }
 
@@ -241,36 +274,41 @@ function animate() {
   if (!pauseButton.classList.contains("paused")) {
     ctx.clearRect(0, 0, innerWidth, innerHeight)
 
+    // quadTreeArray.forEach(quadtree => {
+    //   console.log(`Quadtree population = ${quadtree.population.length}`)
+    // })
+
     quadTreeArray.forEach(quadtree => {
+      const quadtreePopulationLength = quadtree.population.length
       if (quadtree.population.length > 0) {
-        quadtree.population.forEach(agent => {
-          tempAgentArray.push(agent)
-        })
-        quadtree.population = []
+        for (let i = 0; i < quadtreePopulationLength; i++) {
+          quadtreeRoot.population.push(quadtree.population[0])
+          quadtree.population.shift()
+        }
       }
     })
 
+    // console.log(`Clearing quatree array`)
     quadTreeArray = []
+    // console.log(`Pushing root into quadtree array`)
     quadTreeArray.push(quadtreeRoot)
 
-    quadTreeArray.forEach(quadtree => {
-      quadtree.update()
-      quadtree.draw()
-    })
-
-    tempAgentArray.forEach(agent => {
+    quadtreeRoot.population.forEach(agent => {
+      // console.log("Updating agents from quadtree Root population")
       agent.update()
       agent.draw()
     })
 
-    tempAgentArray = []
+    // console.log(`Updating root quadtree`)
+    quadtreeRoot.update()
 
-    //console.log(quadTreeArray.length)
-    // quadTreeArray.forEach(quadtree => {
-    //   console.log(`Number of agents in quadtree: ${quadtree.population.length}`)
-    // })
+    quadTreeArray.forEach(quadtree => {
+      quadtree.draw()
+    })
 
-    console.log("Frame count")
+    // console.log(`Quadtree array length = ${quadTreeArray.length}`)
+
+    console.log("New frame")
 
     requestAnimationFrame(animate)
   }
