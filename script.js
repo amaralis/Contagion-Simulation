@@ -1,21 +1,46 @@
-const canvas = /** @type {HTMLCanvasElement} */ document.getElementById(
+const contagionCanvas = /** @type {HTMLCanvasElement} */ document.getElementById(
   "contagionCanvas"
 )
-const ctx = /** @type {HTMLCanvasElement} */ canvas.getContext("2d")
-canvas.width = "500"
-canvas.height = "500"
+const chartCanvasDiv = /** @type {HTMLCanvasElement} */ document.getElementById(
+  "chartCanvasDiv"
+)
+
+const ctx = /** @type {HTMLCanvasElement} */ contagionCanvas.getContext("2d")
+contagionCanvas.width = "800"
+contagionCanvas.height = "800"
+
+const ctxChart = /** @type {HTMLCanvasElement} */ chartCanvas.getContext("2d")
+chartCanvasDiv.style.position = "relative"
+
+/** Log framerate */
+
+let fps = 0
+const updateFrames = function() {
+  fps++
+}
+
+const refreshFrames = function() {
+  fps = 0
+}
+
+const logFrameRate = setInterval(() => {
+  console.log(`Frames per second = ${fps}`)
+  refreshFrames()
+}, 1000)
 
 /** Add agents with click */
 
-canvas.addEventListener("click", () => {
-  for (let i = 0; i < 10; i++) {
+contagionCanvas.addEventListener("click", () => {
+  for (let i = 0; i < 100; i++) {
     quadtreeRoot.population.push(
-      new Circle(
+      new Agent(
         Math.round(
-          Math.random() * (canvas.width - circleRadius * 2) + circleRadius
+          Math.random() * (contagionCanvas.width - circleRadius * 2) +
+            circleRadius
         ),
         Math.round(
-          Math.random() * (canvas.height - circleRadius * 2) + circleRadius
+          Math.random() * (contagionCanvas.height - circleRadius * 2) +
+            circleRadius
         ),
         circleRadius,
         0,
@@ -24,6 +49,8 @@ canvas.addEventListener("click", () => {
       )
     )
   }
+  numberOfAgents += 100
+  console.log(`Agentes: ${numberOfAgents}`)
 })
 
 /** Pause feature */
@@ -35,9 +62,11 @@ pauseButton.addEventListener("click", () => {
   }
 })
 
-/** Global consts */
+/** Global vars */
 
-const circleRadius = 2
+let numberOfAgents = 0
+
+const circleRadius = 4
 const startAngle = 0
 const endAngle = Math.PI * 2
 const counterClockwise = false
@@ -54,7 +83,7 @@ class Quadtree {
     this.height = h
 
     this.population = []
-    this.populationCap = 6
+    this.populationCap = 4
     this.isDivided = false
     this.name = name
 
@@ -71,26 +100,6 @@ class Quadtree {
 
   update = function() {
     this.population.forEach(agent => {
-      // if (
-      //   agent.x >= this.x &&
-      //   agent.x < this.width &&
-      //   agent.y >= this.y &&
-      //   agent.y < this.width &&
-      //   this.population.length < this.populationCap
-      // ) {
-      //   console.log(`Pushing agents into current quadtree`)
-      //   this.population.push(agent)
-
-      // }
-      // console.log(`
-      // Agent's X coords = ${agent.x};
-      // Agent's Y coords = ${agent.y};
-      // ${this.name}Quadtree's starting X = ${this.x};
-      // ${this.name}Quadtree's ending X = ${this.x + this.width};
-      // ${this.name}Quadtree's starting Y = ${this.y};
-      // ${this.name}Quadtree's ending Y = ${this.y + this.height}
-      // `)
-
       if (
         agent.x >= this.x &&
         agent.x < this.x + this.width &&
@@ -148,9 +157,6 @@ class Quadtree {
         while (this.population.length > 0) {
           /** Push agents into new quadtrees and delete them from parent quadtree */
           if (
-            // this.population[0].x < this.width / 2 &&
-            // this.population[0].y < this.height / 2
-
             this.population[0].x >= this.x &&
             this.population[0].x < this.x + this.width / 2 &&
             this.population[0].y >= this.y &&
@@ -160,9 +166,6 @@ class Quadtree {
             this.northwest.population.push(this.population[0])
             this.population.shift()
           } else if (
-            // this.population[0].x >= this.width / 2 &&
-            // this.population[0].y < this.height / 2
-
             this.population[0].x >= this.x + this.width / 2 &&
             this.population[0].x < this.x + this.width &&
             this.population[0].y >= this.y &&
@@ -172,9 +175,6 @@ class Quadtree {
             this.northeast.population.push(this.population[0])
             this.population.shift()
           } else if (
-            // this.population[0].x < this.width / 2 &&
-            // this.population[0].y >= this.height / 2
-
             this.population[0].x >= this.x &&
             this.population[0].x < this.x + this.width / 2 &&
             this.population[0].y >= this.y + this.height / 2 &&
@@ -184,9 +184,6 @@ class Quadtree {
             this.southwest.population.push(this.population[0])
             this.population.shift()
           } else if (
-            // this.population[0].x >= this.width / 2 &&
-            // this.population[0].y >= this.height / 2
-
             this.population[0].x >= this.x + this.width / 2 &&
             this.population[0].x < this.x + this.width &&
             this.population[0].y >= this.y + this.height / 2 &&
@@ -225,12 +222,19 @@ class Quadtree {
 
 /** Instantiate quadtree root */
 
-quadtreeRoot = new Quadtree(0, 0, canvas.width, canvas.height, null, "root")
+quadtreeRoot = new Quadtree(
+  0,
+  0,
+  contagionCanvas.width,
+  contagionCanvas.height,
+  null,
+  "root"
+)
 quadTreeArray.push(quadtreeRoot)
 
-/** Agent/Circle class */
+/** Agent class */
 
-class Circle {
+class Agent {
   constructor(x, y, radius, startAngle, endAngle, cc) {
     this.x = x
     this.y = y
@@ -257,11 +261,17 @@ class Circle {
   }
 
   update = function() {
-    if (this.x + this.radius > canvas.width || this.x - this.radius < 0) {
+    if (
+      this.x + this.radius > contagionCanvas.width ||
+      this.x - this.radius < 0
+    ) {
       this.vX = -this.vX
     }
 
-    if (this.y + this.radius > canvas.height || this.y - this.radius < 0) {
+    if (
+      this.y + this.radius > contagionCanvas.height ||
+      this.y - this.radius < 0
+    ) {
       this.vY = -this.vY
     }
 
@@ -270,9 +280,35 @@ class Circle {
   }
 }
 
+/** Chart */
+
+let chart = new Chart(ctxChart, {
+  // The type of chart we want to create
+  type: "line",
+
+  // The data for our dataset
+  data: {
+    labels: ["January", "February", "March", "April", "May", "June", "July"],
+    datasets: [
+      {
+        label: "My First dataset",
+        backgroundColor: "rgb(255, 99, 132)",
+        borderColor: "rgb(255, 99, 132)",
+        data: [0, 10, 5, 2, 20, 30, 45]
+      }
+    ]
+  },
+
+  // Configuration options go here
+  options: {}
+})
+
+chart.canvas.parentNode.style.height = "128px"
+chart.canvas.parentNode.style.width = "128px"
+
 function animate() {
   if (!pauseButton.classList.contains("paused")) {
-    ctx.clearRect(0, 0, innerWidth, innerHeight)
+    ctx.clearRect(0, 0, contagionCanvas.width, contagionCanvas.height)
 
     // quadTreeArray.forEach(quadtree => {
     //   console.log(`Quadtree population = ${quadtree.population.length}`)
@@ -308,7 +344,7 @@ function animate() {
 
     // console.log(`Quadtree array length = ${quadTreeArray.length}`)
 
-    console.log("New frame")
+    updateFrames()
 
     requestAnimationFrame(animate)
   }
