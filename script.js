@@ -45,7 +45,8 @@ contagionCanvas.addEventListener("click", () => {
         circleRadius,
         0,
         Math.PI * 2,
-        false
+        false,
+        quadtreeRoot
       )
     )
   }
@@ -99,118 +100,108 @@ class Quadtree {
   }
 
   update = function() {
-    this.population.forEach(agent => {
-      if (
-        agent.x >= this.x &&
-        agent.x < this.x + this.width &&
-        agent.y >= this.y &&
-        agent.y < this.y + this.height &&
-        this.population.length >= this.populationCap
-      ) {
-        // console.log("Dividing tree and deleting agents from parent")
-        this.isDivided = true
+    if (this.population.length >= this.populationCap) {
+      // console.log("Dividing tree and deleting agents from parent")
+      this.isDivided = true
 
-        this.northwest = new Quadtree(
-          this.x,
-          this.y,
-          this.width / 2,
-          this.height / 2,
-          this,
-          "norhtwest"
-        )
-        this.northeast = new Quadtree(
-          this.x + this.width / 2,
-          this.y,
-          this.width / 2,
-          this.height / 2,
-          this,
-          "northeast"
-        )
-        this.southwest = new Quadtree(
-          this.x,
-          this.y + this.height / 2,
-          this.width / 2,
-          this.height / 2,
-          this,
-          "southwest"
-        )
-        this.southeast = new Quadtree(
-          this.x + this.width / 2,
-          this.y + this.height / 2,
-          this.width / 2,
-          this.height / 2,
-          this,
-          "southeast"
-        )
+      this.northwest = new Quadtree(
+        this.x,
+        this.y,
+        this.width / 2,
+        this.height / 2,
+        this,
+        "norhtwest"
+      )
+      this.northeast = new Quadtree(
+        this.x + this.width / 2,
+        this.y,
+        this.width / 2,
+        this.height / 2,
+        this,
+        "northeast"
+      )
+      this.southwest = new Quadtree(
+        this.x,
+        this.y + this.height / 2,
+        this.width / 2,
+        this.height / 2,
+        this,
+        "southwest"
+      )
+      this.southeast = new Quadtree(
+        this.x + this.width / 2,
+        this.y + this.height / 2,
+        this.width / 2,
+        this.height / 2,
+        this,
+        "southeast"
+      )
 
-        // console.log(
-        //   `Pushing quadtrees into quadtree array, which is of length ${quadTreeArray.length}`
-        // )
-        quadTreeArray.push(
-          this.northwest,
-          this.northeast,
-          this.southwest,
-          this.southeast
-        )
-        // console.log(`Quadtree array length = ${quadTreeArray.length}`)
+      // console.log(
+      //   `Pushing quadtrees into quadtree array, which is of length ${quadTreeArray.length}`
+      // )
+      quadTreeArray.push(
+        this.northwest,
+        this.northeast,
+        this.southwest,
+        this.southeast
+      )
+      // console.log(`Quadtree array length = ${quadTreeArray.length}`)
 
-        while (this.population.length > 0) {
-          /** Push agents into new quadtrees and delete them from parent quadtree */
-          if (
-            this.population[0].x >= this.x &&
-            this.population[0].x < this.x + this.width / 2 &&
-            this.population[0].y >= this.y &&
-            this.population[0].y < this.y + this.height / 2
-          ) {
-            // console.log("Pushing agents into northwest")
-            this.northwest.population.push(this.population[0])
-            this.population.shift()
-          } else if (
-            this.population[0].x >= this.x + this.width / 2 &&
-            this.population[0].x < this.x + this.width &&
-            this.population[0].y >= this.y &&
-            this.population[0].y < this.y + this.height / 2
-          ) {
-            // console.log("Pushing agents into northeast")
-            this.northeast.population.push(this.population[0])
-            this.population.shift()
-          } else if (
-            this.population[0].x >= this.x &&
-            this.population[0].x < this.x + this.width / 2 &&
-            this.population[0].y >= this.y + this.height / 2 &&
-            this.population[0].y < this.y + this.height
-          ) {
-            // console.log("Pushing agents into southwest")
-            this.southwest.population.push(this.population[0])
-            this.population.shift()
-          } else if (
-            this.population[0].x >= this.x + this.width / 2 &&
-            this.population[0].x < this.x + this.width &&
-            this.population[0].y >= this.y + this.height / 2 &&
-            this.population[0].y < this.y + this.height
-          ) {
-            // console.log("Pushing agents into southeast")
-            this.southeast.population.push(this.population[0])
-            this.population.shift()
-          }
-          // quadTreeArray.forEach(quadtree => {
-          //   console.log(
-          //     `${quadtree.name} population = ${quadtree.population.length}`
-          //   )
-          // })
-          // console.log(quadTreeArray.length)
+      while (this.population.length > 0) {
+        /** Push agents into new quadtrees and delete them from parent quadtree */
+        if (
+          this.population[0].x >= this.x &&
+          this.population[0].x < this.x + this.width / 2 &&
+          this.population[0].y >= this.y &&
+          this.population[0].y < this.y + this.height / 2
+        ) {
+          // console.log("Pushing agents into northwest")
+          this.population[0].parentQuadtree = this.northwest
+          this.northwest.population.push(this.population[0])
+          this.population.shift()
+        } else if (
+          this.population[0].x >= this.x + this.width / 2 &&
+          this.population[0].x < this.x + this.width &&
+          this.population[0].y >= this.y &&
+          this.population[0].y < this.y + this.height / 2
+        ) {
+          // console.log("Pushing agents into northeast")
+          this.population[0].parentQuadtree = this.northeast
+          this.northeast.population.push(this.population[0])
+          this.population.shift()
+        } else if (
+          this.population[0].x >= this.x &&
+          this.population[0].x < this.x + this.width / 2 &&
+          this.population[0].y >= this.y + this.height / 2 &&
+          this.population[0].y < this.y + this.height
+        ) {
+          // console.log("Pushing agents into southwest")
+          this.population[0].parentQuadtree = this.southwest
+          this.southwest.population.push(this.population[0])
+          this.population.shift()
+        } else if (
+          this.population[0].x >= this.x + this.width / 2 &&
+          this.population[0].x < this.x + this.width &&
+          this.population[0].y >= this.y + this.height / 2 &&
+          this.population[0].y < this.y + this.height
+        ) {
+          // console.log("Pushing agents into southeast")
+          this.population[0].parentQuadtree = this.southeast
+          this.southeast.population.push(this.population[0])
+          this.population.shift()
         }
-
-        // console.log(`Updating northwest`)
-        this.northwest.update()
-        // console.log(`Updating northeast`)
-        this.northeast.update()
-        // console.log(`Updating southwest`)
-        this.southwest.update()
-        // console.log(`Updating southeast`)
-        this.southeast.update()
       }
-    })
+
+      // console.log(`Updating northwest`)
+      this.northwest.update()
+      // console.log(`Updating northeast`)
+      this.northeast.update()
+      // console.log(`Updating southwest`)
+      this.southwest.update()
+      // console.log(`Updating southeast`)
+      this.southeast.update()
+    }
   }
 
   draw = function() {
@@ -235,7 +226,7 @@ quadTreeArray.push(quadtreeRoot)
 /** Agent class */
 
 class Agent {
-  constructor(x, y, radius, startAngle, endAngle, cc) {
+  constructor(x, y, radius, startAngle, endAngle, cc, parentQuadtree) {
     this.x = x
     this.y = y
     this.radius = radius
@@ -244,6 +235,7 @@ class Agent {
     this.cc = cc
     this.vX = (Math.random() - 0.5) * 2
     this.vY = (Math.random() - 0.5) * 2
+    this.parentQuadtree = parentQuadtree
   }
 
   draw = function() {
@@ -303,8 +295,8 @@ let chart = new Chart(ctxChart, {
   options: {}
 })
 
-chart.canvas.parentNode.style.height = "128px"
-chart.canvas.parentNode.style.width = "128px"
+chart.canvas.parentNode.style.height = "800px"
+chart.canvas.parentNode.style.width = "800px"
 
 function animate() {
   if (!pauseButton.classList.contains("paused")) {
