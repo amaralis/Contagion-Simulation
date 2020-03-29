@@ -30,8 +30,11 @@ const logFrameRate = setInterval(() => {
 
 /** Add agents with click */
 
+const spawnAgents = 500
+let numberOfAgents = 0
+
 contagionCanvas.addEventListener("click", () => {
-  for (let i = 0; i < 1000; i++) {
+  for (let i = 0; i < spawnAgents; i++) {
     quadtreeRoot.population.push(
       new Agent(
         Math.round(
@@ -50,26 +53,33 @@ contagionCanvas.addEventListener("click", () => {
       )
     )
   }
-  numberOfAgents += 1000
+
+  quadtreeRoot.population.forEach(agent => {
+    susceptibleArr.push(agent)
+  })
+
+  numberOfAgents += spawnAgents
   console.log(`Agentes: ${numberOfAgents}`)
 
-  // quadtreeRoot.population.push(
-  //   new TestAgent(
-  //     Math.round(
-  //       Math.random() * (contagionCanvas.width - circleRadius * 2) +
-  //         circleRadius
-  //     ),
-  //     Math.round(
-  //       Math.random() * (contagionCanvas.height - circleRadius * 2) +
-  //         circleRadius
-  //     ),
-  //     circleRadius,
-  //     0,
-  //     Math.PI * 2,
-  //     false,
-  //     quadtreeRoot
-  //   )
-  // )
+  quadtreeRoot.population.push(
+    (testAgent = new TestAgent(
+      Math.round(
+        Math.random() * (contagionCanvas.width - circleRadius * 2) +
+          circleRadius
+      ),
+      Math.round(
+        Math.random() * (contagionCanvas.height - circleRadius * 2) +
+          circleRadius
+      ),
+      circleRadius,
+      0,
+      Math.PI * 2,
+      false,
+      quadtreeRoot
+    ))
+  )
+  testAgent.isContaminated = true
+  contaminatedArr.push(testAgent)
 })
 
 /** Pause feature */
@@ -83,12 +93,15 @@ pauseButton.addEventListener("click", () => {
 
 /** Global vars */
 
-let numberOfAgents = 0
-
 const circleRadius = 4
 const startAngle = 0
 const endAngle = Math.PI * 2
 const counterClockwise = false
+
+let susceptibleArr = []
+let contaminatedArr = []
+let infectedArr = []
+let removedArr = []
 let quadTreeArray = []
 let quadTreeArrayNotDivided = []
 
@@ -102,7 +115,7 @@ class Quadtree {
     this.height = h
 
     this.population = []
-    this.populationCap = 90
+    this.populationCap = 100
     this.isDivided = false
     this.name = name
     this.isNeighbor
@@ -256,15 +269,13 @@ class Agent {
     this.vY = (Math.random() - 0.5) * 2
     this.parentQuadtree = parentQuadtree
     this.hasNeighboringQuadtree
+    this.isSusceptible = true
+    this.isContaminated
+    this.isInfected
+    this.isRemoved
 
     this.neighbors = []
     this.neighboringQuadtrees = []
-    // console.log(
-    //   `Number of neighbors for test agent at init = ${this.neighbors.length}`
-    // )
-    // console.log(
-    //   `Number of neighboring quadtrees for test agent at init = ${this.neighboringQuadtrees.length}`
-    // )
   }
 
   getNeighbors = function() {
@@ -280,9 +291,6 @@ class Agent {
       pointLeft < this.parentQuadtree.x
     ) {
       quadTreeArrayNotDivided.forEach(quadtree => {
-        // console.log(
-        //   `quadTreeArrayNotDivided has ${quadTreeArrayNotDivided.length} elements`
-        // )
         if (
           !(
             quadtree.x + quadtree.width < pointLeft ||
@@ -293,21 +301,7 @@ class Agent {
         ) {
           this.hasNeighboringQuadtree = true
           quadtree.isNeighbor = true
-
-          // console.log(quadtree.isNeighbor)
-
           this.neighboringQuadtrees.push(quadtree)
-
-          // console.log(
-          //   `Number of neighboring quadtrees: ${this.neighboringQuadtrees.length}`
-          // )
-          // this.neighboringQuadtrees.forEach(neighbor => {
-          //   if (neighbor != this) {
-          //     console.log(
-          //       `Population within ${neighbor.name} quadtree is of ${neighbor.population.length}`
-          //     )
-          //   }
-          // })
         }
       })
 
@@ -318,97 +312,119 @@ class Agent {
           const radii = agent.radius + this.radius
 
           if (agent != this) {
-            // console.log(
-            //   `Number of neighbors for test agent before push at 422 = ${this.neighbors.length}`
-            // )
-
             this.neighbors.push(agent)
 
-            // console.log(
-            //   `Number of neighbors for test agent after push at 422 = ${this.neighbors.length}`
-            // )
-
-            /** Collisions are only being detected on the border of a quadtree */
+            /** Detect collision */
             if (distX * distX + distY * distY < radii * radii) {
-              // console.log(`collision`)
-
               ctx.beginPath()
               ctx.arc(agent.x, agent.y, 5, 0, Math.PI * 2, false)
               ctx.fillStyle = "rgba(100, 100, 0, 1)"
               ctx.fill()
+
+              if (agent.isSusceptible && this.isContaminated) {
+                agent.isContaminated = true
+                agent.isSusceptible = false
+
+                console.log(`Susceptible array length is ${susceptibleArr.length};
+                Contaminated array length is ${contaminatedArr.length}`)
+                const i = susceptibleArr.indexOf(agent)
+                contaminatedArr.push(agent)
+                susceptibleArr.splice(i, 1)
+                console.log(`Susceptible array length is ${susceptibleArr.length};
+                Contaminated array length is ${contaminatedArr.length}`)
+              }
+              if (this.isSusceptible && agent.isContaminated) {
+                this.isContaminated = true
+                this.isSusceptible = false
+
+                console.log(`Susceptible array length is ${susceptibleArr.length};
+                Contaminated array length is ${contaminatedArr.length}`)
+                const i = susceptibleArr.indexOf(this)
+                contaminatedArr.push(this)
+                susceptibleArr.splice(i, 1)
+                console.log(`Susceptible array length is ${susceptibleArr.length};
+                Contaminated array length is ${contaminatedArr.length}`)
+              }
             }
           }
         })
       })
     } else {
-      /** GET NEIGHBORS WITHIN CURRENT QUADTREE HERE, SO IT DOESN'T CHECK IT TWICE WHEN ON A BORDER */
-
       this.parentQuadtree.population.forEach(agent => {
         const distX = agent.x - this.x
         const distY = agent.y - this.y
         const radii = agent.radius + this.radius
 
         if (agent != this) {
-          // console.log(
-          //   `Number of neighbors for test agent before push at 474 = ${this.neighbors.length}`
-          // )
-
           this.neighbors.push(agent)
 
-          // console.log(
-          //   `Number of neighbors for test agent after push at 474 = ${this.neighbors.length}`
-          // )
-
-          /** Collisions were only being detected on the border of a quadtree */
-          // if (
-          //   Math.sqrt(
-          //     Math.pow(agent.x - this.x, 2) + Math.pow(agent.y - this.y, 2)
-          //   ) <
-          //   agent.radius + this.radius
-          // ) {
-          //   // console.log(`collision`)
-
-          //   ctx.beginPath()
-          //   ctx.arc(agent.x, agent.y, 5, 0, Math.PI * 2, false)
-          //   ctx.fillStyle = "rgba(100, 100, 0, 1)"
-          //   ctx.fill()
-          // }
-
+          /** Detect collision */
           if (distX * distX + distY * distY < radii * radii) {
-            // console.log(`collision`)
-
             ctx.beginPath()
             ctx.arc(agent.x, agent.y, 5, 0, Math.PI * 2, false)
             ctx.fillStyle = "rgba(100, 100, 0, 1)"
             ctx.fill()
+
+            if (agent.isSusceptible && this.isContaminated) {
+              agent.isContaminated = true
+              agent.isSusceptible = false
+
+              console.log(`Susceptible array length is ${susceptibleArr.length};
+                Contaminated array length is ${contaminatedArr.length}`)
+              const i = susceptibleArr.indexOf(agent)
+              contaminatedArr.push(agent)
+              susceptibleArr.splice(i, 1)
+              console.log(`Susceptible array length is ${susceptibleArr.length};
+                Contaminated array length is ${contaminatedArr.length}`)
+            }
+            if (this.isSusceptible && agent.isContaminated) {
+              this.isContaminated = true
+              this.isSusceptible = false
+
+              console.log(`Susceptible array length is ${susceptibleArr.length};
+                Contaminated array length is ${contaminatedArr.length}`)
+              const i = susceptibleArr.indexOf(this)
+              contaminatedArr.push(this)
+              susceptibleArr.splice(i, 1)
+              console.log(`Susceptible array length is ${susceptibleArr.length};
+                Contaminated array length is ${contaminatedArr.length}`)
+            }
           }
         }
       })
     }
-    // console.log(
-    //   `Number of neighbors for test agent at end of getNeighbors = ${this.neighbors.length}`
-    // )
-    this.neighbors.forEach(neighbor => {
-      // console.log(
-      //   `Neighbor agent has coordX of ${neighbor.x} and coordY of ${neighbor.y}`
-      // )
-    })
+
+    // console.log(this)
 
     return this.neighbors
   }
 
   draw = function() {
-    ctx.beginPath()
-    ctx.arc(
-      this.x,
-      this.y,
-      this.radius,
-      this.startAngle,
-      this.endAngle,
-      this.cc
-    )
-    ctx.fillStyle = "rgba(255, 0, 0, 1)"
-    ctx.fill()
+    if (this.isContaminated) {
+      ctx.beginPath()
+      ctx.arc(
+        this.x,
+        this.y,
+        this.radius,
+        this.startAngle,
+        this.endAngle,
+        this.cc
+      )
+      ctx.fillStyle = "rgba(255, 0, 0, 1)"
+      ctx.fill()
+    } else {
+      ctx.beginPath()
+      ctx.arc(
+        this.x,
+        this.y,
+        this.radius,
+        this.startAngle,
+        this.endAngle,
+        this.cc
+      )
+      ctx.fillStyle = "rgba(0, 255, 0, 1)"
+      ctx.fill()
+    }
   }
 
   update = function() {
@@ -445,15 +461,19 @@ class TestAgent {
     this.vY = (Math.random() - 0.5) * 2
     this.parentQuadtree = parentQuadtree
     this.hasNeighboringQuadtree
+    this.isSusceptible
+    this.isContaminated
+    this.isInfected
+    this.isRemoved
 
     this.neighbors = []
     this.neighboringQuadtrees = []
-    console.log(
-      `Number of neighbors for test agent at init = ${this.neighbors.length}`
-    )
-    console.log(
-      `Number of neighboring quadtrees for test agent at init = ${this.neighboringQuadtrees.length}`
-    )
+    // console.log(
+    //   `Number of neighbors for test agent at init = ${this.neighbors.length}`
+    // )
+    // console.log(
+    //   `Number of neighboring quadtrees for test agent at init = ${this.neighboringQuadtrees.length}`
+    // )
   }
 
   getNeighbors = function() {
@@ -469,9 +489,9 @@ class TestAgent {
       pointLeft < this.parentQuadtree.x
     ) {
       quadTreeArrayNotDivided.forEach(quadtree => {
-        console.log(
-          `quadTreeArrayNotDivided has ${quadTreeArrayNotDivided.length} elements`
-        )
+        // console.log(
+        //   `quadTreeArrayNotDivided has ${quadTreeArrayNotDivided.length} elements`
+        // )
         if (
           !(
             quadtree.x + quadtree.width < pointLeft ||
@@ -488,18 +508,18 @@ class TestAgent {
           this.hasNeighboringQuadtree = true
           quadtree.isNeighbor = true
 
-          console.log(quadtree.isNeighbor)
+          // console.log(quadtree.isNeighbor)
 
           this.neighboringQuadtrees.push(quadtree)
 
-          console.log(
-            `Number of neighboring quadtrees: ${this.neighboringQuadtrees.length}`
-          )
+          // console.log(
+          //   `Number of neighboring quadtrees: ${this.neighboringQuadtrees.length}`
+          // )
           this.neighboringQuadtrees.forEach(neighbor => {
             if (neighbor != this) {
-              console.log(
-                `Population within ${neighbor.name} quadtree is of ${neighbor.population.length}`
-              )
+              // console.log(
+              //   `Population within ${neighbor.name} quadtree is of ${neighbor.population.length}`
+              // )
             }
           })
         }
@@ -508,9 +528,9 @@ class TestAgent {
       this.neighboringQuadtrees.forEach(quadtreeNeighbor => {
         quadtreeNeighbor.population.forEach(agent => {
           if (agent != this) {
-            console.log(
-              `Number of neighbors for test agent before push at 422 = ${this.neighbors.length}`
-            )
+            // console.log(
+            //   `Number of neighbors for test agent before push at 422 = ${this.neighbors.length}`
+            // )
 
             this.neighbors.push(agent)
 
@@ -519,23 +539,47 @@ class TestAgent {
             ctx.fillStyle = "rgba(255, 255, 255, 1)"
             ctx.fill()
 
-            console.log(
-              `Number of neighbors for test agent after push at 422 = ${this.neighbors.length}`
-            )
+            // console.log(
+            //   `Number of neighbors for test agent after push at 422 = ${this.neighbors.length}`
+            // )
 
-            /** Collisions are only being detected on the border of a quadtree */
             if (
               Math.sqrt(
                 Math.pow(agent.x - this.x, 2) + Math.pow(agent.y - this.y, 2)
               ) <
               agent.radius + this.radius
             ) {
-              console.log(`collision`)
+              // console.log(`collision`)
 
               ctx.beginPath()
               ctx.arc(agent.x, agent.y, 5, 0, Math.PI * 2, false)
               ctx.fillStyle = "rgba(100, 100, 0, 1)"
               ctx.fill()
+
+              if (agent.isSusceptible && this.isContaminated) {
+                agent.isContaminated = true
+                agent.isSusceptible = false
+
+                console.log(`Susceptible array length is ${susceptibleArr.length};
+                Contaminated array length is ${contaminatedArr.length}`)
+                const i = susceptibleArr.indexOf(agent)
+                contaminatedArr.push(agent)
+                susceptibleArr.splice(i, 1)
+                console.log(`Susceptible array length is ${susceptibleArr.length};
+                Contaminated array length is ${contaminatedArr.length}`)
+              }
+              if (this.isSusceptible && agent.isContaminated) {
+                this.isContaminated = true
+                this.isSusceptible = false
+
+                console.log(`Susceptible array length is ${susceptibleArr.length};
+                Contaminated array length is ${contaminatedArr.length}`)
+                const i = susceptibleArr.indexOf(this)
+                contaminatedArr.push(this)
+                susceptibleArr.splice(i, 1)
+                console.log(`Susceptible array length is ${susceptibleArr.length};
+                Contaminated array length is ${contaminatedArr.length}`)
+              }
             }
           }
         })
@@ -545,20 +589,20 @@ class TestAgent {
 
       this.parentQuadtree.population.forEach(agent => {
         if (agent != this) {
-          console.log(
-            `Number of neighbors for test agent before push at 474 = ${this.neighbors.length}`
-          )
+          // console.log(
+          //   `Number of neighbors for test agent before push at 474 = ${this.neighbors.length}`
+          // )
 
           this.neighbors.push(agent)
 
-          ctx.beginPath()
-          ctx.arc(agent.x, agent.y, 5, 0, Math.PI * 2, false)
-          ctx.fillStyle = "rgba(255, 255, 255, 1)"
-          ctx.fill()
+          // ctx.beginPath()
+          // ctx.arc(agent.x, agent.y, 5, 0, Math.PI * 2, false)
+          // ctx.fillStyle = "rgba(255, 255, 255, 1)"
+          // ctx.fill()
 
-          console.log(
-            `Number of neighbors for test agent after push at 474 = ${this.neighbors.length}`
-          )
+          // console.log(
+          //   `Number of neighbors for test agent after push at 474 = ${this.neighbors.length}`
+          // )
 
           /** Collisions were only being detected on the border of a quadtree */
           if (
@@ -567,24 +611,49 @@ class TestAgent {
             ) <
             agent.radius + this.radius
           ) {
-            console.log(`collision`)
+            // console.log(`collision`)
 
             ctx.beginPath()
             ctx.arc(agent.x, agent.y, 5, 0, Math.PI * 2, false)
             ctx.fillStyle = "rgba(100, 100, 0, 1)"
             ctx.fill()
+
+            if (agent.isSusceptible && this.isContaminated) {
+              agent.isContaminated = true
+              agent.isSusceptible = false
+
+              console.log(`Susceptible array length is ${susceptibleArr.length};
+                Contaminated array length is ${contaminatedArr.length}`)
+              const i = susceptibleArr.indexOf(agent)
+              contaminatedArr.push(agent)
+              susceptibleArr.splice(i, 1)
+              console.log(`Susceptible array length is ${susceptibleArr.length};
+                Contaminated array length is ${contaminatedArr.length}`)
+            }
+            if (this.isSusceptible && agent.isContaminated) {
+              this.isContaminated = true
+              this.isSusceptible = false
+
+              console.log(`Susceptible array length is ${susceptibleArr.length};
+                Contaminated array length is ${contaminatedArr.length}`)
+              const i = susceptibleArr.indexOf(this)
+              contaminatedArr.push(this)
+              susceptibleArr.splice(i, 1)
+              console.log(`Susceptible array length is ${susceptibleArr.length};
+                Contaminated array length is ${contaminatedArr.length}`)
+            }
           }
         }
       })
     }
-    console.log(
-      `Number of neighbors for test agent at end of getNeighbors = ${this.neighbors.length}`
-    )
-    this.neighbors.forEach(neighbor => {
-      console.log(
-        `Neighbor agent has coordX of ${neighbor.x} and coordY of ${neighbor.y}`
-      )
-    })
+    // console.log(
+    //   `Number of neighbors for test agent at end of getNeighbors = ${this.neighbors.length}`
+    // )
+    // this.neighbors.forEach(neighbor => {
+    //   console.log(
+    //     `Neighbor agent has coordX of ${neighbor.x} and coordY of ${neighbor.y}`
+    //   )
+    // })
 
     return this.neighbors
   }
@@ -637,7 +706,7 @@ class TestAgent {
   }
 }
 
-/** Chart */
+/** ========================== Chart ========================== */
 
 let chart = new Chart(ctxChart, {
   // The type of chart we want to create
@@ -662,6 +731,8 @@ let chart = new Chart(ctxChart, {
 
 chart.canvas.parentNode.style.height = "400px"
 chart.canvas.parentNode.style.width = "400px"
+
+/** ========================== Main draw ========================== */
 
 function draw() {
   if (!pauseButton.classList.contains("paused")) {
