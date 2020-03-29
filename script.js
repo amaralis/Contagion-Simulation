@@ -6,8 +6,8 @@ const chartCanvasDiv = /** @type {HTMLCanvasElement} */ document.getElementById(
 )
 
 const ctx = /** @type {HTMLCanvasElement} */ contagionCanvas.getContext("2d")
-contagionCanvas.width = "500"
-contagionCanvas.height = "500"
+contagionCanvas.width = "600"
+contagionCanvas.height = "600"
 
 const ctxChart = /** @type {HTMLCanvasElement} */ chartCanvas.getContext("2d")
 chartCanvasDiv.style.position = "relative"
@@ -31,7 +31,7 @@ const logFrameRate = setInterval(() => {
 /** Add agents with click */
 
 contagionCanvas.addEventListener("click", () => {
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 1000; i++) {
     quadtreeRoot.population.push(
       new Agent(
         Math.round(
@@ -50,7 +50,7 @@ contagionCanvas.addEventListener("click", () => {
       )
     )
   }
-  numberOfAgents += 10
+  numberOfAgents += 1000
   console.log(`Agentes: ${numberOfAgents}`)
 
   // quadtreeRoot.population.push(
@@ -102,7 +102,7 @@ class Quadtree {
     this.height = h
 
     this.population = []
-    this.populationCap = 3
+    this.populationCap = 90
     this.isDivided = false
     this.name = name
     this.isNeighbor
@@ -117,36 +117,6 @@ class Quadtree {
   insertAgent = function(agent) {
     this.population.push(agent)
   }
-
-  // getNeighborQuadtrees = function() {
-  //   this.population.forEach(agent => {
-  //     let pointTop = agent.y - agent.radius - 1
-  //     let pointRight = agent.x + agent.radius + 1
-  //     let pointBottom = agent.y + agent.radius + 1
-  //     let pointLeft = agent.x - agent.radius - 1
-
-  //     if (
-  //       pointTop < this.y ||
-  //       pointRight >= this.x + this.width ||
-  //       pointBottom >= this.y + this.height ||
-  //       pointLeft < this.x
-  //     ) {
-  //       quadTreeArray.forEach(quadtree => {
-  //         if (
-  //           !(
-  //             quadtree.x + quadtree.width < pointLeft ||
-  //             quadtree.x > pointRight ||
-  //             quadtree.y > pointBottom ||
-  //             quadtree.y + quadtree.height < pointTop
-  //           )
-  //         ) {
-  //           quadtree.isNeighbor = true
-  //           quadtree.draw()
-  //         }
-  //       })
-  //     }
-  //   })
-  // }
 
   update = function() {
     if (this.population.length >= this.populationCap) {
@@ -289,12 +259,12 @@ class Agent {
 
     this.neighbors = []
     this.neighboringQuadtrees = []
-    console.log(
-      `Number of neighbors for test agent at init = ${this.neighbors.length}`
-    )
-    console.log(
-      `Number of neighboring quadtrees for test agent at init = ${this.neighboringQuadtrees.length}`
-    )
+    // console.log(
+    //   `Number of neighbors for test agent at init = ${this.neighbors.length}`
+    // )
+    // console.log(
+    //   `Number of neighboring quadtrees for test agent at init = ${this.neighboringQuadtrees.length}`
+    // )
   }
 
   getNeighbors = function() {
@@ -310,9 +280,9 @@ class Agent {
       pointLeft < this.parentQuadtree.x
     ) {
       quadTreeArrayNotDivided.forEach(quadtree => {
-        console.log(
-          `quadTreeArrayNotDivided has ${quadTreeArrayNotDivided.length} elements`
-        )
+        // console.log(
+        //   `quadTreeArrayNotDivided has ${quadTreeArrayNotDivided.length} elements`
+        // )
         if (
           !(
             quadtree.x + quadtree.width < pointLeft ||
@@ -324,44 +294,43 @@ class Agent {
           this.hasNeighboringQuadtree = true
           quadtree.isNeighbor = true
 
-          console.log(quadtree.isNeighbor)
+          // console.log(quadtree.isNeighbor)
 
           this.neighboringQuadtrees.push(quadtree)
 
-          console.log(
-            `Number of neighboring quadtrees: ${this.neighboringQuadtrees.length}`
-          )
-          this.neighboringQuadtrees.forEach(neighbor => {
-            if (neighbor != this) {
-              console.log(
-                `Population within ${neighbor.name} quadtree is of ${neighbor.population.length}`
-              )
-            }
-          })
+          // console.log(
+          //   `Number of neighboring quadtrees: ${this.neighboringQuadtrees.length}`
+          // )
+          // this.neighboringQuadtrees.forEach(neighbor => {
+          //   if (neighbor != this) {
+          //     console.log(
+          //       `Population within ${neighbor.name} quadtree is of ${neighbor.population.length}`
+          //     )
+          //   }
+          // })
         }
       })
 
       this.neighboringQuadtrees.forEach(quadtreeNeighbor => {
         quadtreeNeighbor.population.forEach(agent => {
+          const distX = agent.x - this.x
+          const distY = agent.y - this.y
+          const radii = agent.radius + this.radius
+
           if (agent != this) {
-            console.log(
-              `Number of neighbors for test agent before push at 422 = ${this.neighbors.length}`
-            )
+            // console.log(
+            //   `Number of neighbors for test agent before push at 422 = ${this.neighbors.length}`
+            // )
 
             this.neighbors.push(agent)
 
-            console.log(
-              `Number of neighbors for test agent after push at 422 = ${this.neighbors.length}`
-            )
+            // console.log(
+            //   `Number of neighbors for test agent after push at 422 = ${this.neighbors.length}`
+            // )
 
             /** Collisions are only being detected on the border of a quadtree */
-            if (
-              Math.sqrt(
-                Math.pow(agent.x - this.x, 2) + Math.pow(agent.y - this.y, 2)
-              ) <
-              agent.radius + this.radius
-            ) {
-              console.log(`collision`)
+            if (distX * distX + distY * distY < radii * radii) {
+              // console.log(`collision`)
 
               ctx.beginPath()
               ctx.arc(agent.x, agent.y, 5, 0, Math.PI * 2, false)
@@ -375,25 +344,38 @@ class Agent {
       /** GET NEIGHBORS WITHIN CURRENT QUADTREE HERE, SO IT DOESN'T CHECK IT TWICE WHEN ON A BORDER */
 
       this.parentQuadtree.population.forEach(agent => {
+        const distX = agent.x - this.x
+        const distY = agent.y - this.y
+        const radii = agent.radius + this.radius
+
         if (agent != this) {
-          console.log(
-            `Number of neighbors for test agent before push at 474 = ${this.neighbors.length}`
-          )
+          // console.log(
+          //   `Number of neighbors for test agent before push at 474 = ${this.neighbors.length}`
+          // )
 
           this.neighbors.push(agent)
 
-          console.log(
-            `Number of neighbors for test agent after push at 474 = ${this.neighbors.length}`
-          )
+          // console.log(
+          //   `Number of neighbors for test agent after push at 474 = ${this.neighbors.length}`
+          // )
 
           /** Collisions were only being detected on the border of a quadtree */
-          if (
-            Math.sqrt(
-              Math.pow(agent.x - this.x, 2) + Math.pow(agent.y - this.y, 2)
-            ) <
-            agent.radius + this.radius
-          ) {
-            console.log(`collision`)
+          // if (
+          //   Math.sqrt(
+          //     Math.pow(agent.x - this.x, 2) + Math.pow(agent.y - this.y, 2)
+          //   ) <
+          //   agent.radius + this.radius
+          // ) {
+          //   // console.log(`collision`)
+
+          //   ctx.beginPath()
+          //   ctx.arc(agent.x, agent.y, 5, 0, Math.PI * 2, false)
+          //   ctx.fillStyle = "rgba(100, 100, 0, 1)"
+          //   ctx.fill()
+          // }
+
+          if (distX * distX + distY * distY < radii * radii) {
+            // console.log(`collision`)
 
             ctx.beginPath()
             ctx.arc(agent.x, agent.y, 5, 0, Math.PI * 2, false)
@@ -403,13 +385,13 @@ class Agent {
         }
       })
     }
-    console.log(
-      `Number of neighbors for test agent at end of getNeighbors = ${this.neighbors.length}`
-    )
+    // console.log(
+    //   `Number of neighbors for test agent at end of getNeighbors = ${this.neighbors.length}`
+    // )
     this.neighbors.forEach(neighbor => {
-      console.log(
-        `Neighbor agent has coordX of ${neighbor.x} and coordY of ${neighbor.y}`
-      )
+      // console.log(
+      //   `Neighbor agent has coordX of ${neighbor.x} and coordY of ${neighbor.y}`
+      // )
     })
 
     return this.neighbors
@@ -451,209 +433,209 @@ class Agent {
 
 /** Class test agent */
 
-// class TestAgent {
-//   constructor(x, y, radius, startAngle, endAngle, cc, parentQuadtree) {
-//     this.x = x
-//     this.y = y
-//     this.radius = radius
-//     this.startAngle = startAngle
-//     this.endAngle = endAngle
-//     this.cc = cc
-//     this.vX = (Math.random() - 0.5) * 2
-//     this.vY = (Math.random() - 0.5) * 2
-//     this.parentQuadtree = parentQuadtree
-//     this.hasNeighboringQuadtree
+class TestAgent {
+  constructor(x, y, radius, startAngle, endAngle, cc, parentQuadtree) {
+    this.x = x
+    this.y = y
+    this.radius = radius
+    this.startAngle = startAngle
+    this.endAngle = endAngle
+    this.cc = cc
+    this.vX = (Math.random() - 0.5) * 2
+    this.vY = (Math.random() - 0.5) * 2
+    this.parentQuadtree = parentQuadtree
+    this.hasNeighboringQuadtree
 
-//     this.neighbors = []
-//     this.neighboringQuadtrees = []
-//     console.log(
-//       `Number of neighbors for test agent at init = ${this.neighbors.length}`
-//     )
-//     console.log(
-//       `Number of neighboring quadtrees for test agent at init = ${this.neighboringQuadtrees.length}`
-//     )
-//   }
+    this.neighbors = []
+    this.neighboringQuadtrees = []
+    console.log(
+      `Number of neighbors for test agent at init = ${this.neighbors.length}`
+    )
+    console.log(
+      `Number of neighboring quadtrees for test agent at init = ${this.neighboringQuadtrees.length}`
+    )
+  }
 
-//   getNeighbors = function() {
-//     let pointTop = this.y - this.radius - 1
-//     let pointRight = this.x + this.radius + 1
-//     let pointBottom = this.y + this.radius + 1
-//     let pointLeft = this.x - this.radius - 1
+  getNeighbors = function() {
+    let pointTop = this.y - this.radius - 1
+    let pointRight = this.x + this.radius + 1
+    let pointBottom = this.y + this.radius + 1
+    let pointLeft = this.x - this.radius - 1
 
-//     if (
-//       pointTop < this.parentQuadtree.y ||
-//       pointRight >= this.parentQuadtree.x + this.parentQuadtree.width ||
-//       pointBottom >= this.parentQuadtree.y + this.parentQuadtree.height ||
-//       pointLeft < this.parentQuadtree.x
-//     ) {
-//       quadTreeArrayNotDivided.forEach(quadtree => {
-//         console.log(
-//           `quadTreeArrayNotDivided has ${quadTreeArrayNotDivided.length} elements`
-//         )
-//         if (
-//           !(
-//             quadtree.x + quadtree.width < pointLeft ||
-//             quadtree.x > pointRight ||
-//             quadtree.y > pointBottom ||
-//             quadtree.y + quadtree.height < pointTop
-//           )
-//         ) {
-//           ctx.beginPath()
-//           ctx.arc(quadtree.x, quadtree.y, 5, 0, Math.PI * 2, false)
-//           ctx.fillStyle = "rgba(255, 255, 255, 1)"
-//           ctx.fill()
+    if (
+      pointTop < this.parentQuadtree.y ||
+      pointRight >= this.parentQuadtree.x + this.parentQuadtree.width ||
+      pointBottom >= this.parentQuadtree.y + this.parentQuadtree.height ||
+      pointLeft < this.parentQuadtree.x
+    ) {
+      quadTreeArrayNotDivided.forEach(quadtree => {
+        console.log(
+          `quadTreeArrayNotDivided has ${quadTreeArrayNotDivided.length} elements`
+        )
+        if (
+          !(
+            quadtree.x + quadtree.width < pointLeft ||
+            quadtree.x > pointRight ||
+            quadtree.y > pointBottom ||
+            quadtree.y + quadtree.height < pointTop
+          )
+        ) {
+          ctx.beginPath()
+          ctx.arc(quadtree.x, quadtree.y, 5, 0, Math.PI * 2, false)
+          ctx.fillStyle = "rgba(255, 255, 255, 1)"
+          ctx.fill()
 
-//           this.hasNeighboringQuadtree = true
-//           quadtree.isNeighbor = true
+          this.hasNeighboringQuadtree = true
+          quadtree.isNeighbor = true
 
-//           console.log(quadtree.isNeighbor)
+          console.log(quadtree.isNeighbor)
 
-//           this.neighboringQuadtrees.push(quadtree)
+          this.neighboringQuadtrees.push(quadtree)
 
-//           console.log(
-//             `Number of neighboring quadtrees: ${this.neighboringQuadtrees.length}`
-//           )
-//           this.neighboringQuadtrees.forEach(neighbor => {
-//             if (neighbor != this) {
-//               console.log(
-//                 `Population within ${neighbor.name} quadtree is of ${neighbor.population.length}`
-//               )
-//             }
-//           })
-//         }
-//       })
+          console.log(
+            `Number of neighboring quadtrees: ${this.neighboringQuadtrees.length}`
+          )
+          this.neighboringQuadtrees.forEach(neighbor => {
+            if (neighbor != this) {
+              console.log(
+                `Population within ${neighbor.name} quadtree is of ${neighbor.population.length}`
+              )
+            }
+          })
+        }
+      })
 
-//       this.neighboringQuadtrees.forEach(quadtreeNeighbor => {
-//         quadtreeNeighbor.population.forEach(agent => {
-//           if (agent != this) {
-//             console.log(
-//               `Number of neighbors for test agent before push at 422 = ${this.neighbors.length}`
-//             )
+      this.neighboringQuadtrees.forEach(quadtreeNeighbor => {
+        quadtreeNeighbor.population.forEach(agent => {
+          if (agent != this) {
+            console.log(
+              `Number of neighbors for test agent before push at 422 = ${this.neighbors.length}`
+            )
 
-//             this.neighbors.push(agent)
+            this.neighbors.push(agent)
 
-//             ctx.beginPath()
-//             ctx.arc(agent.x, agent.y, 5, 0, Math.PI * 2, false)
-//             ctx.fillStyle = "rgba(255, 255, 255, 1)"
-//             ctx.fill()
+            ctx.beginPath()
+            ctx.arc(agent.x, agent.y, 5, 0, Math.PI * 2, false)
+            ctx.fillStyle = "rgba(255, 255, 255, 1)"
+            ctx.fill()
 
-//             console.log(
-//               `Number of neighbors for test agent after push at 422 = ${this.neighbors.length}`
-//             )
+            console.log(
+              `Number of neighbors for test agent after push at 422 = ${this.neighbors.length}`
+            )
 
-//             /** Collisions are only being detected on the border of a quadtree */
-//             if (
-//               Math.sqrt(
-//                 Math.pow(agent.x - this.x, 2) + Math.pow(agent.y - this.y, 2)
-//               ) <
-//               agent.radius + this.radius
-//             ) {
-//               console.log(`collision`)
+            /** Collisions are only being detected on the border of a quadtree */
+            if (
+              Math.sqrt(
+                Math.pow(agent.x - this.x, 2) + Math.pow(agent.y - this.y, 2)
+              ) <
+              agent.radius + this.radius
+            ) {
+              console.log(`collision`)
 
-//               ctx.beginPath()
-//               ctx.arc(agent.x, agent.y, 5, 0, Math.PI * 2, false)
-//               ctx.fillStyle = "rgba(100, 100, 0, 1)"
-//               ctx.fill()
-//             }
-//           }
-//         })
-//       })
-//     } else {
-//       /** GET NEIGHBORS WITHIN CURRENT QUADTREE HERE, SO IT DOESN'T CHECK IT TWICE WHEN ON A BORDER */
+              ctx.beginPath()
+              ctx.arc(agent.x, agent.y, 5, 0, Math.PI * 2, false)
+              ctx.fillStyle = "rgba(100, 100, 0, 1)"
+              ctx.fill()
+            }
+          }
+        })
+      })
+    } else {
+      /** GET NEIGHBORS WITHIN CURRENT QUADTREE HERE, SO IT DOESN'T CHECK IT TWICE WHEN ON A BORDER */
 
-//       this.parentQuadtree.population.forEach(agent => {
-//         if (agent != this) {
-//           console.log(
-//             `Number of neighbors for test agent before push at 474 = ${this.neighbors.length}`
-//           )
+      this.parentQuadtree.population.forEach(agent => {
+        if (agent != this) {
+          console.log(
+            `Number of neighbors for test agent before push at 474 = ${this.neighbors.length}`
+          )
 
-//           this.neighbors.push(agent)
+          this.neighbors.push(agent)
 
-//           ctx.beginPath()
-//           ctx.arc(agent.x, agent.y, 5, 0, Math.PI * 2, false)
-//           ctx.fillStyle = "rgba(255, 255, 255, 1)"
-//           ctx.fill()
+          ctx.beginPath()
+          ctx.arc(agent.x, agent.y, 5, 0, Math.PI * 2, false)
+          ctx.fillStyle = "rgba(255, 255, 255, 1)"
+          ctx.fill()
 
-//           console.log(
-//             `Number of neighbors for test agent after push at 474 = ${this.neighbors.length}`
-//           )
+          console.log(
+            `Number of neighbors for test agent after push at 474 = ${this.neighbors.length}`
+          )
 
-//           /** Collisions were only being detected on the border of a quadtree */
-//           if (
-//             Math.sqrt(
-//               Math.pow(agent.x - this.x, 2) + Math.pow(agent.y - this.y, 2)
-//             ) <
-//             agent.radius + this.radius
-//           ) {
-//             console.log(`collision`)
+          /** Collisions were only being detected on the border of a quadtree */
+          if (
+            Math.sqrt(
+              Math.pow(agent.x - this.x, 2) + Math.pow(agent.y - this.y, 2)
+            ) <
+            agent.radius + this.radius
+          ) {
+            console.log(`collision`)
 
-//             ctx.beginPath()
-//             ctx.arc(agent.x, agent.y, 5, 0, Math.PI * 2, false)
-//             ctx.fillStyle = "rgba(100, 100, 0, 1)"
-//             ctx.fill()
-//           }
-//         }
-//       })
-//     }
-//     console.log(
-//       `Number of neighbors for test agent at end of getNeighbors = ${this.neighbors.length}`
-//     )
-//     this.neighbors.forEach(neighbor => {
-//       console.log(
-//         `Neighbor agent has coordX of ${neighbor.x} and coordY of ${neighbor.y}`
-//       )
-//     })
+            ctx.beginPath()
+            ctx.arc(agent.x, agent.y, 5, 0, Math.PI * 2, false)
+            ctx.fillStyle = "rgba(100, 100, 0, 1)"
+            ctx.fill()
+          }
+        }
+      })
+    }
+    console.log(
+      `Number of neighbors for test agent at end of getNeighbors = ${this.neighbors.length}`
+    )
+    this.neighbors.forEach(neighbor => {
+      console.log(
+        `Neighbor agent has coordX of ${neighbor.x} and coordY of ${neighbor.y}`
+      )
+    })
 
-//     return this.neighbors
-//   }
+    return this.neighbors
+  }
 
-//   draw = function() {
-//     if (!this.hasNeighbor) {
-//       ctx.beginPath()
-//       ctx.arc(
-//         this.x,
-//         this.y,
-//         this.radius,
-//         this.startAngle,
-//         this.endAngle,
-//         this.cc
-//       )
-//       ctx.fillStyle = "rgba(0, 255, 255, 1)"
-//       ctx.fill()
-//     } else {
-//       ctx.beginPath()
-//       ctx.arc(
-//         this.x,
-//         this.y,
-//         this.radius,
-//         this.startAngle,
-//         this.endAngle,
-//         this.cc
-//       )
-//       ctx.fillStyle = "rgba(0, 0, 255, 1)"
-//       ctx.fill()
-//     }
-//   }
+  draw = function() {
+    if (!this.hasNeighbor) {
+      ctx.beginPath()
+      ctx.arc(
+        this.x,
+        this.y,
+        this.radius,
+        this.startAngle,
+        this.endAngle,
+        this.cc
+      )
+      ctx.fillStyle = "rgba(0, 255, 255, 1)"
+      ctx.fill()
+    } else {
+      ctx.beginPath()
+      ctx.arc(
+        this.x,
+        this.y,
+        this.radius,
+        this.startAngle,
+        this.endAngle,
+        this.cc
+      )
+      ctx.fillStyle = "rgba(0, 0, 255, 1)"
+      ctx.fill()
+    }
+  }
 
-//   update = function() {
-//     if (
-//       this.x + this.radius > contagionCanvas.width ||
-//       this.x - this.radius < 0
-//     ) {
-//       this.vX = -this.vX
-//     }
+  update = function() {
+    if (
+      this.x + this.radius > contagionCanvas.width ||
+      this.x - this.radius < 0
+    ) {
+      this.vX = -this.vX
+    }
 
-//     if (
-//       this.y + this.radius > contagionCanvas.height ||
-//       this.y - this.radius < 0
-//     ) {
-//       this.vY = -this.vY
-//     }
+    if (
+      this.y + this.radius > contagionCanvas.height ||
+      this.y - this.radius < 0
+    ) {
+      this.vY = -this.vY
+    }
 
-//     this.y += this.vY
-//     this.x += this.vX
-//   }
-// }
+    this.y += this.vY
+    this.x += this.vX
+  }
+}
 
 /** Chart */
 
@@ -691,6 +673,7 @@ function draw() {
 
     quadTreeArray.forEach(quadtree => {
       const quadtreePopulationLength = quadtree.population.length
+
       if (quadtree.population.length > 0) {
         for (let i = 0; i < quadtreePopulationLength; i++) {
           quadtreeRoot.population.push(quadtree.population[0])
@@ -725,16 +708,16 @@ function draw() {
       quadtree.population.forEach(agent => {
         agent.getNeighbors()
 
-        console.log(`Neighbors: ${agent.neighbors.length}`)
-        console.log(
-          `Neighboring quadtrees: ${agent.neighboringQuadtrees.length}`
-        )
+        // console.log(`Neighbors: ${agent.neighbors.length}`)
+        // console.log(
+        //   `Neighboring quadtrees: ${agent.neighboringQuadtrees.length}`
+        // )
         agent.neighbors = []
         agent.neighboringQuadtrees = []
-        console.log(`Neighbors: ${agent.neighbors.length}`)
-        console.log(
-          `Neighboring quadtrees: ${agent.neighboringQuadtrees.length}`
-        )
+        // console.log(`Neighbors: ${agent.neighbors.length}`)
+        // console.log(
+        //   `Neighboring quadtrees: ${agent.neighboringQuadtrees.length}`
+        // )
       })
     })
 
