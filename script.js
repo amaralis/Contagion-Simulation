@@ -6,8 +6,12 @@ const chartCanvasDiv = /** @type {HTMLCanvasElement} */ document.getElementById(
 );
 
 const ctx = /** @type {HTMLCanvasElement} */ contagionCanvas.getContext("2d");
-contagionCanvas.width = "600";
-contagionCanvas.height = "600";
+const canvasWidth = window.innerWidth;
+const canvasHeight = window.innerHeight / 4;
+contagionCanvas.width = canvasWidth.toString();
+contagionCanvas.height = canvasHeight.toString();
+
+console.log(window.innerWidth);
 
 const ctxChart = /** @type {HTMLCanvasElement} */ chartCanvas.getContext("2d");
 chartCanvasDiv.style.position = "relative";
@@ -28,9 +32,159 @@ const refreshFrames = function() {
 //   refreshFrames()
 // }, 1000)
 
+/** ========================== Global vars ========================== */
+
+const circleRadius = 4;
+const startAngle = 0;
+const endAngle = Math.PI * 2;
+const counterClockwise = false;
+let numberOfTimesteps = 0;
+const timestep = 1000;
+
+let quadTreeArray = [];
+let quadTreeArrayNotDivided = [];
+let susceptibleArr = [];
+let contaminatedArr = [];
+let infectedArr = [];
+let removedArr = [];
+
+/** ========================== Chart vars and functions ========================== */
+
+let chartLabels = 0;
+let newContaminated = 0;
+let previousContaminated = 0;
+let totalContaminated = 0;
+let newInfected = 0;
+let previousInfected = 0;
+
+let getChartableData = function(string) {
+  switch (string) {
+    case "labels":
+      chartLabels++;
+      return chartLabels;
+    case "new contaminated":
+      newContaminated = 0;
+      newContaminated = contaminatedArr.length - previousContaminated;
+      return newContaminated;
+    case "new infected":
+      newInfected = 0;
+      newInfected = infectedArr.length - previousInfected;
+      return newInfected;
+  }
+};
+
+storePreviousContaminated = function() {
+  if (chart.data.datasets[2].data.length < 2) {
+    previousContaminated = 0;
+  } else {
+    let previousArrIndex = chart.data.datasets[2].data.length - 1;
+    previousContaminated = chart.data.datasets[1].data[previousArrIndex];
+  }
+};
+
+storePreviousInfected = function() {
+  if (chart.data.datasets[4].data.length < 2) {
+    previousInfected = 0;
+  } else {
+    let previousContamArrRef = chart.data.datasets[4].data.length - 1;
+    previousInfected = chart.data.datasets[3].data[previousContamArrRef];
+  }
+};
+
+addGeneralLabels = function(chart, label) {
+  chart.data.labels.push(label);
+};
+
+addTotalSusceptible = function(chart, susceptible) {
+  chart.data.datasets[0].data.push(susceptible);
+};
+
+addNewContaminated = function(chart, contaminated) {
+  chart.data.datasets[2].data.push(contaminated);
+};
+
+addTotalContaminated = function(chart, contaminated) {
+  chart.data.datasets[1].data.push(contaminated);
+};
+
+addNewInfected = function(chart, infected) {
+  chart.data.datasets[4].data.push(infected);
+};
+
+addTotalInfected = function(chart, infected) {
+  chart.data.datasets[3].data.push(infected);
+};
+
+addTotalRemoved = function(chart, removed) {
+  chart.data.datasets[5].data.push(removed);
+};
+/** ========================== Chart ========================== */
+
+let chart = new Chart(ctxChart, {
+  // The type of chart we want to create
+  type: "line",
+
+  // The data for our dataset
+  data: {
+    labels: [],
+    datasets: [
+      {
+        /** [0] */
+        label: "Total susceptible",
+        //backgroundColor: "rgb(255, 99, 132)",
+        borderColor: "rgb(0, 255, 255)",
+        data: []
+      },
+      {
+        /** [1] */
+        label: "Total contaminated",
+        //backgroundColor: "rgb(255, 99, 132)",
+        borderColor: "rgb(255, 185, 0)",
+        data: []
+      },
+      {
+        /** [2] */
+        label: "New contaminated",
+        //backgroundColor: "rgb(255, 99, 132)",
+        borderColor: "rgb(255, 255, 50)",
+        data: []
+      },
+      {
+        /** [3] */
+        label: "Total infected",
+        //backgroundColor: "rgb(255, 99, 132)",
+        borderColor: "rgb(255, 0, 0)",
+        data: []
+      },
+      {
+        /** [4] */
+        label: "New infected",
+        //backgroundColor: "rgb(255, 99, 132)",
+        borderColor: "rgb(255, 115, 0)",
+        data: []
+      },
+      {
+        /** [5] */
+        label: "Total removed",
+        //backgroundColor: "rgb(255, 99, 132)",
+        borderColor: "rgb(150, 150, 150)",
+        data: []
+      }
+    ]
+  },
+
+  // Configuration options go here
+  options: {}
+});
+const chartWidth = window.innerWidth;
+const chartHeight = window.innerHeight / 2;
+
+chart.canvas.parentNode.style.height = `${chartHeight.toString()}px`;
+chart.canvas.parentNode.style.width = `${chartWidth.toString()}px`;
+
 /** Add agents with click */
 
-const spawnAgents = 500;
+const spawnAgents = 499;
 let numberOfAgents = 0;
 
 contagionCanvas.addEventListener("click", () => {
@@ -59,10 +213,10 @@ contagionCanvas.addEventListener("click", () => {
   });
 
   numberOfAgents += spawnAgents;
-  console.log(`Agentes: ${numberOfAgents}`);
+  console.log(`Agents: ${numberOfAgents}`);
 
   quadtreeRoot.population.push(
-    (testAgent = new TestAgent(
+    (seedAgent = new Agent(
       Math.round(
         Math.random() * (contagionCanvas.width - circleRadius * 2) +
           circleRadius
@@ -78,8 +232,8 @@ contagionCanvas.addEventListener("click", () => {
       quadtreeRoot
     ))
   );
-  testAgent.isContaminated = true;
-  contaminatedArr.push(testAgent);
+  seedAgent.isContaminated = true;
+  contaminatedArr.push(seedAgent);
 });
 
 /** Timer for chart update */
@@ -98,7 +252,6 @@ class Timer {
 
   updateStartTime = function() {
     this.startTime = this.getTime();
-    // console.log(`Updating start time`)
   };
 
   updateTimeFromStart = function() {
@@ -111,7 +264,6 @@ class Timer {
 
   resetRemainingTime = function() {
     this.remainingTime = this.updateInterval;
-    // console.log(`Resetting remaining time to ${remainingTime}`)
   };
 
   setTimer = function(string) {
@@ -124,16 +276,14 @@ class Timer {
     }
   };
 
-  startTimer(condition) {
-    switch (condition) {
+  startTimer(string) {
+    switch (string) {
       case "start":
         {
+          console.log(`TIMESTEP: ${chartLabels}`);
           this.interval = setTimeout(() => {
             this.updateStartTime();
-
-            console.log(`Tick`);
-            console.log(`Remaining time: ${this.remainingTime}`);
-
+            this.performAction();
             this.startTimer("start");
           }, this.remainingTime);
         }
@@ -143,7 +293,6 @@ class Timer {
           clearInterval(this.interval);
           this.updateTimeFromStart();
           this.updateRemainingTime();
-          console.log(`Remaining time is ${this.remainingTime}`);
         }
         break;
       default:
@@ -153,12 +302,44 @@ class Timer {
         break;
     }
   }
+
+  /** Call functions to execute when timer fires from within the performAction() function */
+
+  performAction = function() {
+    numberOfTimesteps++;
+
+    console.log(
+      `New contaminated array length at step -1 = ${chart.data.datasets[1].data.length}`
+    );
+    console.log(
+      `Previous contaminated array length at step -1 = ${chart.data.datasets[2].data.length}`
+    );
+
+    storePreviousContaminated();
+    addGeneralLabels(chart, getChartableData("labels"));
+    addTotalSusceptible(chart, susceptibleArr.length);
+    addNewContaminated(chart, getChartableData("new contaminated"));
+    addTotalContaminated(chart, contaminatedArr.length);
+    addNewInfected(chart, getChartableData("new infected"));
+    addTotalInfected(chart, infectedArr.length);
+    addTotalRemoved(chart, removedArr.length);
+
+    previousContaminated = contaminatedArr.length;
+
+    chart.update();
+  };
 }
 
-myTimer = new Timer(1000);
+myTimer = new Timer(timestep);
 
 document.addEventListener("DOMContentLoaded", () => {
   myTimer.startTimer("start");
+  if (numberOfTimesteps == 0) {
+    console.log(`Recording contaminated array length with time offset`);
+    // setInterval(() => {
+    //   previousContaminated = contaminatedArr.length;
+    // }, timestep);
+  }
 });
 
 /** Pause feature for main draw() and chart timer */
@@ -177,20 +358,6 @@ pauseButton.addEventListener("click", () => {
     // myTimer.resetInterval(interval);
   }
 });
-
-/** Global vars */
-
-const circleRadius = 4;
-const startAngle = 0;
-const endAngle = Math.PI * 2;
-const counterClockwise = false;
-
-let susceptibleArr = [];
-let contaminatedArr = [];
-let infectedArr = [];
-let removedArr = [];
-let quadTreeArray = [];
-let quadTreeArrayNotDivided = [];
 
 /** Quadtree class */
 
@@ -342,7 +509,7 @@ quadtreeRoot = new Quadtree(
 );
 quadTreeArray.push(quadtreeRoot);
 
-/** Agent class */
+/** ========================== Agent class ========================== */
 
 class Agent {
   constructor(x, y, radius, startAngle, endAngle, cc, parentQuadtree) {
@@ -403,34 +570,21 @@ class Agent {
 
             /** Detect collision */
             if (distX * distX + distY * distY < radii * radii) {
-              ctx.beginPath();
-              ctx.arc(agent.x, agent.y, 5, 0, Math.PI * 2, false);
-              ctx.fillStyle = "rgba(100, 100, 0, 1)";
-              ctx.fill();
-
               if (agent.isSusceptible && this.isContaminated) {
                 agent.isContaminated = true;
                 agent.isSusceptible = false;
 
-                console.log(`Susceptible array length is ${susceptibleArr.length};
-                Contaminated array length is ${contaminatedArr.length}`);
                 const i = susceptibleArr.indexOf(agent);
                 contaminatedArr.push(agent);
                 susceptibleArr.splice(i, 1);
-                console.log(`Susceptible array length is ${susceptibleArr.length};
-                Contaminated array length is ${contaminatedArr.length}`);
               }
               if (this.isSusceptible && agent.isContaminated) {
                 this.isContaminated = true;
                 this.isSusceptible = false;
 
-                console.log(`Susceptible array length is ${susceptibleArr.length};
-                Contaminated array length is ${contaminatedArr.length}`);
                 const i = susceptibleArr.indexOf(this);
                 contaminatedArr.push(this);
                 susceptibleArr.splice(i, 1);
-                console.log(`Susceptible array length is ${susceptibleArr.length};
-                Contaminated array length is ${contaminatedArr.length}`);
               }
             }
           }
@@ -447,34 +601,21 @@ class Agent {
 
           /** Detect collision */
           if (distX * distX + distY * distY < radii * radii) {
-            ctx.beginPath();
-            ctx.arc(agent.x, agent.y, 5, 0, Math.PI * 2, false);
-            ctx.fillStyle = "rgba(100, 100, 0, 1)";
-            ctx.fill();
-
             if (agent.isSusceptible && this.isContaminated) {
               agent.isContaminated = true;
               agent.isSusceptible = false;
 
-              console.log(`Susceptible array length is ${susceptibleArr.length};
-                Contaminated array length is ${contaminatedArr.length}`);
               const i = susceptibleArr.indexOf(agent);
               contaminatedArr.push(agent);
               susceptibleArr.splice(i, 1);
-              console.log(`Susceptible array length is ${susceptibleArr.length};
-                Contaminated array length is ${contaminatedArr.length}`);
             }
             if (this.isSusceptible && agent.isContaminated) {
               this.isContaminated = true;
               this.isSusceptible = false;
 
-              console.log(`Susceptible array length is ${susceptibleArr.length};
-                Contaminated array length is ${contaminatedArr.length}`);
               const i = susceptibleArr.indexOf(this);
               contaminatedArr.push(this);
               susceptibleArr.splice(i, 1);
-              console.log(`Susceptible array length is ${susceptibleArr.length};
-                Contaminated array length is ${contaminatedArr.length}`);
             }
           }
         }
@@ -792,32 +933,6 @@ class TestAgent {
     this.x += this.vX;
   };
 }
-
-/** ========================== Chart ========================== */
-
-let chart = new Chart(ctxChart, {
-  // The type of chart we want to create
-  type: "line",
-
-  // The data for our dataset
-  data: {
-    labels: [],
-    datasets: [
-      {
-        label: "My First dataset",
-        backgroundColor: "rgb(255, 99, 132)",
-        borderColor: "rgb(255, 99, 132)",
-        data: [0, 10, 5, 2, 20, 30, 45]
-      }
-    ]
-  },
-
-  // Configuration options go here
-  options: {}
-});
-
-chart.canvas.parentNode.style.height = "200px";
-chart.canvas.parentNode.style.width = "600px";
 
 /** ========================== Main draw ========================== */
 
