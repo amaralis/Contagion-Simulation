@@ -6,8 +6,8 @@ const chartCanvasDiv = /** @type {HTMLCanvasElement} */ document.getElementById(
 );
 
 const ctx = /** @type {HTMLCanvasElement} */ contagionCanvas.getContext("2d");
-const canvasWidth = window.innerWidth;
-const canvasHeight = window.innerHeight / 4;
+const canvasWidth = window.innerWidth / 2;
+const canvasHeight = window.innerHeight / 3.2;
 contagionCanvas.width = canvasWidth.toString();
 contagionCanvas.height = canvasHeight.toString();
 
@@ -34,10 +34,15 @@ const refreshFrames = function() {
 
 /** ========================== Global vars ========================== */
 
-const circleRadius = 4;
+const circleRadius = 2;
 const startAngle = 0;
 const endAngle = Math.PI * 2;
 const counterClockwise = false;
+const timeUntilInfection = 1000;
+const washHandsProbability = 0.8;
+const timeUntilWashHands = 500;
+let agentsWhoWashedHands = 0;
+
 let numberOfTimesteps = 0;
 const timestep = 1000;
 
@@ -51,11 +56,14 @@ let removedArr = [];
 /** ========================== Chart vars and functions ========================== */
 
 let chartLabels = 0;
+
 let newContaminated = 0;
 let previousContaminated = 0;
 let totalContaminated = 0;
+
 let newInfected = 0;
 let previousInfected = 0;
+let totalInfected = 0;
 
 let getChartableData = function(string) {
   switch (string) {
@@ -64,10 +72,22 @@ let getChartableData = function(string) {
       return chartLabels;
     case "new contaminated":
       newContaminated = 0;
-      newContaminated = contaminatedArr.length - previousContaminated;
+      // console.log(
+      //   `Previous contaminated = ${previousContaminated}; agents who washed hands = ${agentsWhoWashedHands}`
+      // );
+      // console.log(
+      //   `New contaminated = ${newContaminated} = Contaminated array length (${contaminatedArr.length}) - Previous contaminated (${previousContaminated}) + agents who washed hands = ${agentsWhoWashedHands}`
+      // );
+      newContaminated =
+        contaminatedArr.length - previousContaminated + agentsWhoWashedHands;
+      agentsWhoWashedHands = 0;
       return newContaminated;
     case "new infected":
       newInfected = 0;
+      // console.log(`Previous infected = ${previousInfected} = `);
+      // console.log(
+      //   `New infected (${newInfected}) = Infected array length (${infectedArr.length}) - Previous infected (${previousInfected}) `
+      // );
       newInfected = infectedArr.length - previousInfected;
       return newInfected;
   }
@@ -86,8 +106,8 @@ storePreviousInfected = function() {
   if (chart.data.datasets[4].data.length < 2) {
     previousInfected = 0;
   } else {
-    let previousContamArrRef = chart.data.datasets[4].data.length - 1;
-    previousInfected = chart.data.datasets[3].data[previousContamArrRef];
+    let previousArrIndex = chart.data.datasets[4].data.length - 1;
+    previousInfected = chart.data.datasets[3].data[previousArrIndex];
   }
 };
 
@@ -118,6 +138,7 @@ addTotalInfected = function(chart, infected) {
 addTotalRemoved = function(chart, removed) {
   chart.data.datasets[5].data.push(removed);
 };
+
 /** ========================== Chart ========================== */
 
 let chart = new Chart(ctxChart, {
@@ -176,15 +197,15 @@ let chart = new Chart(ctxChart, {
   // Configuration options go here
   options: {}
 });
-const chartWidth = window.innerWidth;
-const chartHeight = window.innerHeight / 2;
+const chartWidth = window.innerWidth / 2;
+//const chartHeight = window.innerHeight;
 
-chart.canvas.parentNode.style.height = `${chartHeight.toString()}px`;
 chart.canvas.parentNode.style.width = `${chartWidth.toString()}px`;
+// chart.canvas.parentNode.style.height = `${chartHeight.toString()}px`;
 
-/** Add agents with click */
+/** Spawn agents with click */
 
-const spawnAgents = 499;
+const spawnAgents = 1999;
 let numberOfAgents = 0;
 
 contagionCanvas.addEventListener("click", () => {
@@ -215,6 +236,8 @@ contagionCanvas.addEventListener("click", () => {
   numberOfAgents += spawnAgents;
   console.log(`Agents: ${numberOfAgents}`);
 
+  /** Seed agent */
+
   quadtreeRoot.population.push(
     (seedAgent = new Agent(
       Math.round(
@@ -232,8 +255,15 @@ contagionCanvas.addEventListener("click", () => {
       quadtreeRoot
     ))
   );
+  seedAgent.isInfected = true;
   seedAgent.isContaminated = true;
+  seedAgent.isSusceptible = false;
+  infectedArr.push(seedAgent);
   contaminatedArr.push(seedAgent);
+
+  // setInterval(() => {
+  //   console.log(`${seedAgent.isSusceptible}`);
+  // }, 250);
 });
 
 /** Timer for chart update */
@@ -308,13 +338,6 @@ class Timer {
   performAction = function() {
     numberOfTimesteps++;
 
-    console.log(
-      `New contaminated array length at step -1 = ${chart.data.datasets[1].data.length}`
-    );
-    console.log(
-      `Previous contaminated array length at step -1 = ${chart.data.datasets[2].data.length}`
-    );
-
     storePreviousContaminated();
     addGeneralLabels(chart, getChartableData("labels"));
     addTotalSusceptible(chart, susceptibleArr.length);
@@ -325,21 +348,21 @@ class Timer {
     addTotalRemoved(chart, removedArr.length);
 
     previousContaminated = contaminatedArr.length;
+    previousInfected = infectedArr.length;
 
     chart.update();
+
+    console.log(`New contaminated: ${newContaminated}`);
+    console.log(`New infected: ${newInfected}`);
   };
 }
 
 myTimer = new Timer(timestep);
 
+/** Start timer on DOM content loaded */
+
 document.addEventListener("DOMContentLoaded", () => {
   myTimer.startTimer("start");
-  if (numberOfTimesteps == 0) {
-    console.log(`Recording contaminated array length with time offset`);
-    // setInterval(() => {
-    //   previousContaminated = contaminatedArr.length;
-    // }, timestep);
-  }
 });
 
 /** Pause feature for main draw() and chart timer */
@@ -369,7 +392,7 @@ class Quadtree {
     this.height = h;
 
     this.population = [];
-    this.populationCap = 100;
+    this.populationCap = 130;
     this.isDivided = false;
     this.name = name;
     this.isNeighbor;
@@ -573,6 +596,8 @@ class Agent {
               if (agent.isSusceptible && this.isContaminated) {
                 agent.isContaminated = true;
                 agent.isSusceptible = false;
+                agent.startWashHandsTimer();
+                agent.startInfectionTimer();
 
                 const i = susceptibleArr.indexOf(agent);
                 contaminatedArr.push(agent);
@@ -581,6 +606,8 @@ class Agent {
               if (this.isSusceptible && agent.isContaminated) {
                 this.isContaminated = true;
                 this.isSusceptible = false;
+                this.startWashHandsTimer();
+                this.startInfectionTimer();
 
                 const i = susceptibleArr.indexOf(this);
                 contaminatedArr.push(this);
@@ -604,6 +631,8 @@ class Agent {
             if (agent.isSusceptible && this.isContaminated) {
               agent.isContaminated = true;
               agent.isSusceptible = false;
+              agent.startWashHandsTimer();
+              agent.startInfectionTimer();
 
               const i = susceptibleArr.indexOf(agent);
               contaminatedArr.push(agent);
@@ -612,6 +641,8 @@ class Agent {
             if (this.isSusceptible && agent.isContaminated) {
               this.isContaminated = true;
               this.isSusceptible = false;
+              this.startWashHandsTimer();
+              this.startInfectionTimer();
 
               const i = susceptibleArr.indexOf(this);
               contaminatedArr.push(this);
@@ -627,8 +658,42 @@ class Agent {
     return this.neighbors;
   };
 
+  startInfectionTimer = function() {
+    this.infectionDelay = setTimeout(() => {
+      this.isInfected = true;
+      infectedArr.push(this);
+    }, timeUntilInfection);
+  };
+
+  startWashHandsTimer = function() {
+    /** Wash hands after certain time */
+    if (Math.random() < washHandsProbability) {
+      this.washHandsDelay = setTimeout(() => {
+        this.isContaminated = false;
+        this.isSusceptible = true;
+        clearInterval(this.infectionDelay);
+        const i = contaminatedArr.indexOf(this);
+        susceptibleArr.push(this);
+        contaminatedArr.splice(i, 1);
+        agentsWhoWashedHands++;
+      }, timeUntilWashHands);
+    }
+  };
+
   draw = function() {
-    if (this.isContaminated) {
+    if (this.isContaminated && !this.isInfected) {
+      ctx.beginPath();
+      ctx.arc(
+        this.x,
+        this.y,
+        this.radius,
+        this.startAngle,
+        this.endAngle,
+        this.cc
+      );
+      ctx.fillStyle = "rgba(255, 255, 0, 1)";
+      ctx.fill();
+    } else if (this.isInfected) {
       ctx.beginPath();
       ctx.arc(
         this.x,
