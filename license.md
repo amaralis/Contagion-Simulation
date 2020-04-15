@@ -1,4 +1,4 @@
-The usage and distribution of the code contained within this repository (hereafter designated simply as "this code") is licensed under the conditions stated in this document. The copyright holder of this code is the person who wrote it, hereafter designated by its GitHub user name "amaralis", or "original copyright holder".
+The usage and distribution of portions or the entirety of the code contained within this repository (hereafter designated simply as "this code") is licensed under the conditions stated in this document. The copyright holder of this code is the person who wrote it, hereafter designated by its GitHub user name "amaralis", or "original copyright holder".
 
 Conditions under which this code may be **freely used and/or distributed**:
 
