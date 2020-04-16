@@ -334,7 +334,7 @@ const avgContaminationsAlt = document.querySelector("#avgContAlt");*/
 /** Intro text animation */
 
 const introText =
-  "Welcome to my first project. The coding on display here is amateurish at best, and the layout may appear broken on some devices. Don't even try it on Edge and Internet Explorer. It may run slow on your device, as the simulation presented is resource-intensive. It is intended to be an exercise in javascript and data manipulation during my time in social isolation, with the bare minimum styling required. Accessibility, cross-browser compatibility, and code modularity with webpack and a front-end framework could not be achieved, as I am still in the process of learning. Enjoy your visit!";
+  "Welcome to my first project. The coding on display here is amateurish at best, and the layout may appear broken on some devices. Don't even try it on Edge and Internet Explorer. It may run slow on your device, as the simulation presented is resource-intensive and relies on a solid framerate (yes, that one's on me, mea culpa). It is intended to be an exercise in javascript and data manipulation during my time in social isolation, with the bare minimum styling required. Accessibility, cross-browser compatibility, and code modularity with webpack and a front-end framework could not be achieved, as I am still in the process of learning. Enjoy your visit!";
 const introTextArr = [...introText];
 
 const addChar = function (arr, para) {
