@@ -1,10 +1,814 @@
-body {
+* {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  background-color: #333;
 }
 
-#chartCanvasDiv {
-  width: "800px";
+#modal {
+  display: none;
+}
+
+/*=============================== SVG ===============================*/
+
+#biohazard.showing {
+  background: black;
+  margin: 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  overflow-y: scroll;
+  opacity: 1;
+
+  z-index: 10;
+}
+
+#biohazard.hidden {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: fixed;
+  width: 100vw;
+  opacity: 0;
+  height: 0;
+  transition: all 1s ease-out;
+}
+
+#biohazard-svg {
+  min-height: 70vh;
+  margin: -20vh 0 -20vh 0;
+}
+
+#intro {
+  max-width: 70vw;
+  text-align: justify;
+  padding: 1.6rem;
+  z-index: 11;
+  text-shadow: 0px 0px 3px black;
+}
+
+#introBtn {
+  min-width: 10rem;
+  min-height: 10rem;
+  border-radius: 50%;
+  margin: 5rem auto 5rem auto;
+  display: block;
+  background: radial-gradient(circle at 30% 20%, #666, #111);
+  filter: drop-shadow(4px 4px 2px #444);
+  outline: none;
+  border: 1px solid gray;
+  font-family: "Roboto Mono", monospace;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: rgb(0, 150, 0);
+  text-shadow: black 1px 1px 2px;
+}
+
+#introBtn:active {
+  transform: translate(2px, 2px);
+  background: radial-gradient(circle at 30% 20%, #111, #666);
+  filter: drop-shadow(2px 2px 1px #444);
+  outline: none;
+  border: 1px solid gray;
+  font-family: "Roboto Mono", monospace;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: rgb(0, 150, 0);
+  text-shadow: black 1px 1px 1px;
+}
+
+#group-1 {
+  transform-origin: center;
+  transform: rotateZ(60deg);
+  animation: 1.5s linear 1.2s forwards group-1-animation;
+  fill: red;
+}
+#group-2 {
+  transform-origin: center;
+  transform: rotateZ(60deg);
+  animation: 1.5s linear 1.2s forwards group-2-animation;
+  fill: red;
+}
+#group-3 {
+  transform-origin: center;
+  transform: rotateZ(60deg);
+  animation: 1.5s linear 1.2s forwards group-3-animation;
+  fill: red;
+}
+
+#circle-top {
+  transform-origin: center;
+  transform: rotateZ(60deg);
+  animation: 2.5s linear 0.5s forwards circle-1-animation;
+  fill: red;
+}
+#circle-left {
+  transform-origin: center;
+  transform: rotateZ(60deg);
+  animation: 2.5s linear 0.5s forwards circle-2-animation;
+  fill: red;
+}
+#circle-right {
+  transform-origin: center;
+  transform: rotateZ(60deg);
+  animation: 2.5s linear 0.5s forwards circle-3-animation;
+  fill: red;
+}
+
+#circles {
+  animation: 0.7s linear 1.5s forwards circle-rotate;
+}
+
+#rings {
+  transform-origin: center;
+  animation: 0.7s linear 1.5s forwards rings-rotate;
+}
+
+@keyframes group-1-animation {
+  0% {
+    transform-origin: center;
+    transform: translate(0px, 0px) rotateZ(60deg);
+    fill: red;
+  }
+  5% {
+    transform-origin: center;
+    transform: translate(0px, -85px) rotateZ(60deg);
+    fill: rgb(132, 132, 0);
+  }
+  70% {
+    transform-origin: center;
+    transform: translate(0px, -85px) rotateZ(60deg);
+    fill: green;
+  }
+  78% {
+    transform-origin: center;
+    transform: translate(0px, 0px) rotateZ(60deg);
+    fill: green;
+  }
+  100% {
+    transform-origin: center;
+    transform: translate(0px, 0px) rotateZ(60deg);
+    fill: green;
+  }
+}
+@keyframes group-2-animation {
+  0% {
+    transform-origin: center;
+    transform: translate(0px, 0px) rotateZ(60deg);
+    fill: red;
+  }
+  5% {
+    transform-origin: center;
+    transform: translate(75px, 45px) rotateZ(60deg);
+    fill: rgb(132, 132, 0);
+  }
+  78% {
+    transform-origin: center;
+    transform: translate(75px, 45px) rotateZ(60deg);
+    fill: green;
+  }
+  86% {
+    transform-origin: center;
+    transform: translate(0px, 0px) rotateZ(60deg);
+    fill: green;
+  }
+  100% {
+    transform-origin: center;
+    transform: translate(0px, 0px) rotateZ(60deg);
+    fill: green;
+  }
+}
+@keyframes group-3-animation {
+  0% {
+    transform-origin: center;
+    transform: translate(0px, 0px) rotateZ(60deg);
+    fill: red;
+  }
+  5% {
+    transform-origin: center;
+    transform: translate(-75px, 45px) rotateZ(60deg);
+    fill: rgb(132, 132, 0);
+  }
+  86% {
+    transform-origin: center;
+    transform: translate(-75px, 45px) rotateZ(60deg);
+    fill: green;
+  }
+  94% {
+    transform-origin: center;
+    transform: translate(0px, 0px) rotateZ(60deg);
+    fill: green;
+  }
+  100% {
+    transform-origin: center;
+    transform: translate(0px, 0px) rotateZ(60deg);
+    fill: green;
+  }
+}
+
+/*Circle animation*/
+
+@keyframes circle-1-animation {
+  0% {
+    transform-origin: center;
+    transform: translate(0px, 0px) rotateZ(60deg);
+    fill: red;
+  }
+  2% {
+    transform-origin: center;
+    transform: translate(0px, 0px) rotateZ(60deg);
+    fill: red;
+  }
+  7% {
+    transform-origin: center;
+    transform: translate(38px, -20px) rotateZ(60deg);
+    fill: green;
+  }
+  95% {
+    transform-origin: center;
+    transform: translate(38px, -20px) rotateZ(60deg);
+    fill: rgb(132, 132, 0);
+  }
+  100% {
+    transform-origin: center;
+    transform: translate(0px, 0px) rotateZ(60deg);
+    fill: rgb(132, 132, 0);
+  }
+}
+@keyframes circle-2-animation {
+  0% {
+    transform-origin: center;
+    transform: translate(0px, 0px) rotateZ(60deg);
+    fill: red;
+  }
+  7% {
+    transform-origin: center;
+    transform: translate(0px, 0px) rotateZ(60deg);
+    fill: red;
+  }
+  12% {
+    transform-origin: center;
+    transform: translate(-38px, -20px) rotateZ(60deg);
+    fill: green;
+  }
+  95% {
+    transform-origin: center;
+    transform: translate(-38px, -20px) rotateZ(60deg);
+    fill: rgb(132, 132, 0);
+  }
+  100% {
+    transform-origin: center;
+    transform: translate(0px, 0px) rotateZ(60deg);
+    fill: rgb(132, 132, 0);
+  }
+}
+@keyframes circle-3-animation {
+  0% {
+    transform-origin: center;
+    transform: translate(0px, 0px) rotateZ(60deg);
+    fill: red;
+  }
+  12% {
+    transform-origin: center;
+    transform: translate(0px, 0px) rotateZ(60deg);
+    fill: red;
+  }
+  17% {
+    transform-origin: center;
+    transform: translate(0px, 46px) rotateZ(60deg);
+    fill: green;
+  }
+  95% {
+    transform-origin: center;
+    transform: translate(0px, 46px) rotateZ(60deg);
+    fill: rgb(132, 132, 0);
+  }
+  100% {
+    transform-origin: center;
+    transform: translate(0px, 3px) rotateZ(60deg);
+    fill: rgb(132, 132, 0);
+  }
+}
+
+/*Circle opening*/
+
+@keyframes circle-top-open {
+  0% {
+    transform-origin: center;
+    transform: translate(0px, 0px) rotateZ(60deg);
+  }
+  100% {
+    transform-origin: center;
+    transform: translate(38px, -20px) rotateZ(60deg);
+  }
+}
+@keyframes circle-left-open {
+  0% {
+    transform-origin: center;
+    transform: translate(0px, 0px) rotateZ(60deg);
+  }
+  100% {
+    transform-origin: center;
+    transform: translate(-38px, -20px) rotateZ(60deg);
+  }
+}
+@keyframes circle-right-open {
+  0% {
+    transform-origin: center;
+    transform: translate(0px, 0px) rotateZ(60deg);
+  }
+  100% {
+    transform-origin: center;
+    transform: translate(0px, 46px) rotateZ(60deg);
+  }
+}
+
+/*Circles rotating*/
+
+@keyframes circle-rotate {
+  from {
+    transform-origin: center;
+    transform: rotateZ(0deg);
+  }
+  to {
+    transform-origin: center;
+    transform: rotateZ(-180deg);
+  }
+}
+
+/*Rings rotating*/
+
+@keyframes rings-rotate {
+  0% {
+    transform: rotateZ(0deg);
+  }
+  100% {
+    transform: rotateZ(180deg);
+  }
+}
+
+/*=============================== Base Styles ===============================*/
+
+body {
+  /*background-color: #333;*/
+  background: radial-gradient(#666, #333);
+  height: 100vh;
+  max-width: 1920px;
+  font-family: "Roboto Mono", monospace;
+  font-weight: 700;
+  color: rgb(0, 150, 0);
+  text-shadow: black 1px 1px 1px;
+  font-size: 1.3rem;
+  margin: 0 auto;
+  background-attachment: fixed;
+  overflow-x: hidden;
+}
+
+input {
+  border-radius: 5px;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  max-width: 90px;
+  background-color: rgb(103, 147, 103);
+  font-weight: 800;
+  text-align: center;
+  border-radius: 20px;
+  border-color: gray;
+  -moz-appearance: textfield;
+}
+
+input::-webkit-inner-spin-button {
+  appearance: none;
+}
+
+ul,
+li {
+  list-style: none;
+}
+
+#content-wrapper {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  justify-content: space-evenly;
+  width: 100%;
+  /*background-color: red;*/
+}
+
+#canvas-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  /*background-color: green;*/
+}
+
+#contagion-canvas-div {
+  display: flex;
+  border: 1px solid green;
+  min-width: 650px;
+  min-height: 312px;
+}
+
+#arrow {
+  font-size: 20rem;
+  text-shadow: black 1px 1px 15px;
+}
+
+#down-arrow {
+  display: none;
+}
+
+#contagion-canvas-div-corrected {
+  display: flex;
+  border: 1px solid green;
+  min-width: 650px;
+  min-height: 312px;
+}
+
+/*==========================================================*/
+
+.input-div {
+  background: #999;
+  border-radius: 0.5em;
+  border: 1px solid #222;
+  background: linear-gradient(175deg, #666, #111);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 1.2rem;
+}
+
+.input-div input {
+  width: 15%;
+  margin-left: 10px;
+  border-radius: 20px;
+}
+
+#chart-controls-div {
+  display: flex;
+  justify-content: space-evenly;
+  margin: 0 1rem;
+  /*background-color: yellow;*/
+}
+
+#chart-canvas-div {
+  background-color: rgba(0, 0, 0, 0.5);
+  position: relative;
+  width: 40%;
+  border: 1px solid green;
+  border-radius: 5px;
+  padding-top: 30px;
+  padding-bottom: 30px;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+#sim-controls {
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: stretch;
+  border: 1px solid green;
+  border-radius: 5px;
+  padding: 1rem;
+}
+
+#sim-controls div {
+  padding: 1rem;
+  margin: 0.5rem;
+}
+
+#start-sim-btn {
+  width: 10rem;
+  height: 10rem;
+  border-radius: 50%;
+  margin: 0 auto;
+  display: block;
+  background: radial-gradient(circle at 30% 20%, #666, #111);
+  filter: drop-shadow(4px 4px 2px #444);
+  outline: none;
+  border: 1px solid gray;
+  font-family: "Roboto Mono", monospace;
+  font-weight: 700;
+  font-size: 1rem;
+  color: rgb(0, 150, 0);
+  text-shadow: black 1px 1px 1px;
+}
+
+#start-sim-btn:active {
+  transform: translate(2px, 2px);
+  background: radial-gradient(circle at 30% 20%, #111, #666);
+  filter: drop-shadow(2px 2px 1px #444);
+  outline: none;
+  border: 1px solid gray;
+  font-family: "Roboto Mono", monospace;
+  font-weight: 700;
+  font-size: 1rem;
+  color: rgb(0, 150, 0);
+  text-shadow: black 1px 1px 1px;
+}
+
+#mortality-wrapper {
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid green;
+  border-radius: 5px;
+  display: flex;
+  align-items: stretch;
+}
+
+#mortality-list {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+
+  padding: 1rem;
+}
+
+#mortality-list li {
+  height: 2rem;
+}
+
+/*==================================================================================*/
+
+@media (max-width: 1920px) {
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+
+  ul,
+  li {
+    list-style: none;
+  }
+
+  #content-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    justify-content: space-evenly;
+    width: 100%;
+    /*background-color: red;*/
+  }
+
+  #canvas-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    /*background-color: green;*/
+  }
+
+  #contagion-canvas-div {
+    display: flex;
+    border: 1px solid green;
+  }
+
+  #arrow {
+    font-size: 20rem;
+    text-shadow: black 1px 1px 15px;
+  }
+
+  #down-arrow {
+    display: none;
+  }
+
+  #contagion-canvas-div-corrected {
+    display: flex;
+    border: 1px solid green;
+  }
+
+  /*==========================================================*/
+
+  .input-div {
+    background: #999;
+    border-radius: 0.5em;
+    border: 1px solid #222;
+    background: linear-gradient(175deg, #666, #111);
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 1.2rem;
+  }
+
+  .input-div input {
+    width: 15%;
+    margin-left: 10px;
+    border-radius: 20px;
+  }
+
+  #chart-controls-div {
+    display: flex;
+    justify-content: space-evenly;
+    min-width: 650px;
+    min-height: 350px;
+    /*background-color: yellow;*/
+  }
+
+  #chart-canvas-div {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: relative;
+    width: 40%;
+    border: 1px solid green;
+    border-radius: 5px;
+    padding-top: 30px;
+    padding-bottom: 30px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  #sim-controls {
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: stretch;
+    border: 1px solid green;
+    border-radius: 5px;
+    padding: 1rem;
+  }
+  #sim-controls div {
+    flex: 1;
+    padding: 1rem;
+    margin: 0.5rem;
+  }
+
+  #start-sim-btn {
+    width: 10rem;
+    height: 10rem;
+    border-radius: 50%;
+    /*background-color: #999; /*#444*/
+    background: radial-gradient(circle at 30% 20%, #666, #111);
+    filter: drop-shadow(4px 4px 2px #444);
+    outline: none;
+    border: 1px solid gray;
+    font-family: "Roboto Mono", monospace;
+    font-weight: 700;
+    font-size: 1rem;
+    color: rgb(0, 150, 0);
+    text-shadow: black 1px 1px 1px;
+  }
+
+  #start-sim-btn:active {
+    transform: translate(2px, 2px);
+    background: radial-gradient(circle at 30% 20%, #111, #666);
+    filter: drop-shadow(2px 2px 1px #444);
+    outline: none;
+    border: 1px solid gray;
+    font-family: "Roboto Mono", monospace;
+    font-weight: 700;
+    font-size: 1rem;
+    color: rgb(0, 150, 0);
+    text-shadow: black 1px 1px 1px;
+  }
+
+  #mortality-wrapper {
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid green;
+    border-radius: 5px;
+    display: flex;
+    align-items: stretch;
+  }
+
+  #mortality-list {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+
+    padding: 1rem;
+  }
+
+  #mortality-list li {
+    height: 2rem;
+  }
+}
+
+/*==========================================================*/
+
+@media screen and (max-width: 1700px) {
+  html {
+    width: auto;
+  }
+
+  #content-wrapper {
+    display: flex;
+    flex-direction: column;
+
+    /*background-color: red;*/
+  }
+
+  #canvas-wrapper {
+    margin-top: 3rem;
+    margin-bottom: 5rem;
+  }
+
+  #arrow {
+    font-size: 3rem;
+  }
+
+  #chart-controls-div {
+    flex-wrap: wrap;
+    justify-content: space-around;
+    min-height: 0; /*INSERT INTO CSS TEMPLATE*/
+  }
+
+  #chart-controls-div > div {
+    margin: 2rem;
+  }
+
+  #chart-canvas-div {
+    flex: 1 0 740px;
+    min-width: 30%;
+    min-height: 350px;
+  }
+
+  #mortality-list {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+  }
+
+  #mortality-list li {
+    padding: 1.5rem 1rem;
+  }
+
+  #sim-controls {
+    display: flex;
+    flex: 1;
+    min-width: 500px;
+  }
+
+  #sim-controls br {
+    content: "";
+  }
+
+  #sim-controls label,
+  input {
+    margin: 0 auto;
+  }
+}
+/*==========================================================*/
+
+@media (max-width: 1370px) {
+  #canvas-wrapper {
+    flex-direction: column !important;
+    margin: 15rem auto 5rem auto;
+  }
+
+  #chart-controls-div {
+    min-height: 0;
+  }
+
+  #right-arrow {
+    display: none;
+  }
+
+  #down-arrow {
+    display: block;
+    font-size: 5rem;
+  }
+}
+
+@media (max-width: 750px) {
+  body {
+    position: fixed;
+  }
+  #modal {
+    display: block;
+    align-content: center;
+    position: fixed;
+    z-index: 9001;
+    width: 100vw;
+    height: 100vh;
+    background: black;
+    padding: 1.6rem;
+    overflow-y: scroll;
+    overflow-x: hidden;
+  }
+
+  #modal h1 {
+    text-align: center;
+    margin: 3rem;
+  }
+
+  #modal p {
+    text-align: justify;
+    margin: 1.6rem;
+  }
+}
+
+@media (max-height: 580px) {
+  #content-wrapper {
+    margin-top: 8rem;
+  }
+
+  #biohazard.showing {
+    margin-top: -8rem;
+  }
 }

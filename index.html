@@ -5,20 +5,275 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <link rel="stylesheet" type="text/css" href="styles.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <title>Contagion</title>
   </head>
+  
+  <div id="modal">
+    <h1>Ooops...</h1>
+    <p>Looks like this screen is too narrow for this project to be properly displayed! Please try rotating your device sideways, or use a larger device, for proper viewing.</p>
+    <p>The simulation being run relies on canvases with a certain size. Less than that, and the numbers start making little sense. For a better experience, please use a device with a screen width of at least 750 pixels.</p>
+  </div>
+
+<!-- ============================================================================== -->
+
+  <div id="biohazard" class="showing">
+
+      <p id="intro"></p>
+
+      <svg id="biohazard-svg" width="842" height="596" viewBox="0 0 842 596" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g id="rings">
+          <g id="group-1">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M411.632 301.3C410.552 298.578 410.674 295.41 412.253 292.677C413.828 289.95 416.503 288.26 419.395 287.831V285.13C399.371 284.316 383.386 267.834 383.386 247.61C383.386 230.764 394.476 216.509 409.755 211.747C386.408 216.868 368.93 237.659 368.93 262.542C368.93 270.686 370.805 278.391 374.141 285.253C375.324 285.141 376.522 285.078 377.735 285.078C391.09 285.078 402.81 292.051 409.466 302.552L411.632 301.3Z"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M341.084 330.886C337.568 315.273 344.368 298.539 358.958 290.116C376.477 280.002 398.748 285.608 409.463 302.552L411.829 301.186C411.424 300.104 411.191 298.937 411.191 297.713C411.191 292.758 414.83 288.664 419.578 287.923V285.229C407.156 284.715 395.257 278.052 388.579 266.486C387.973 265.436 387.429 264.367 386.934 263.286C379.322 263.828 371.712 266.057 364.66 270.129C343.109 282.572 333.844 308.105 341.084 330.886Z"/>
+          </g>
+          <g id="group-2">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M432.132 211.745C447.411 216.506 458.503 230.762 458.503 247.609C458.503 267.838 442.512 284.322 422.481 285.129V287.861C423.621 288.051 424.748 288.434 425.807 289.046C430.098 291.523 431.825 296.721 430.092 301.204L432.425 302.551C439.081 292.05 450.801 285.077 464.156 285.077C465.369 285.077 466.566 285.14 467.75 285.252C471.086 278.389 472.961 270.685 472.961 262.541C472.961 237.656 455.48 216.865 432.132 211.745Z"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M500.805 330.886C504.322 315.273 497.522 298.539 482.932 290.116C465.413 280.002 443.142 285.608 432.427 302.552L430.061 301.186C430.466 300.104 430.699 298.937 430.699 297.713C430.699 292.758 427.06 288.664 422.312 287.923V285.229C434.734 284.715 446.633 278.052 453.311 266.486C453.917 265.436 454.461 264.367 454.956 263.286C462.567 263.828 470.178 266.057 477.23 270.129C498.78 282.572 508.045 308.105 500.805 330.886Z"/>
+          </g>
+          <g id="group-3">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M428.893 303.861C427.075 306.157 424.27 307.635 421.114 307.635C417.965 307.635 415.164 306.162 413.346 303.873L411.007 305.224C420.314 322.972 414.032 345.057 396.518 355.168C381.93 363.591 364.039 361.114 352.275 350.264C368.383 367.922 395.128 372.664 416.677 360.223C423.731 356.151 429.466 350.674 433.741 344.354C433.052 343.385 432.397 342.378 431.792 341.329C425.114 329.764 425.294 316.127 431.06 305.112L428.893 303.861Z"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M412.997 303.861C414.815 306.157 417.62 307.635 420.776 307.635C423.925 307.635 426.726 306.162 428.545 303.873L430.884 305.224C421.577 322.972 427.859 345.057 445.373 355.168C459.961 363.591 477.852 361.114 489.615 350.264C473.507 367.922 446.762 372.664 425.214 360.223C418.159 356.151 412.425 350.674 408.15 344.354C408.839 343.385 409.494 342.378 410.099 341.329C416.777 329.764 416.597 316.127 410.831 305.112L412.997 303.861Z"/>
+          </g>
+        </g>
+        <g id="circles">
+          <path id="circle-top" fill-rule="evenodd" clip-rule="evenodd" d="M447.225 267.393C439.998 260.228 430.126 255.807 419.234 255.807C408.342 255.807 398.469 260.229 391.243 267.394C393.444 270.639 396.178 273.48 399.315 275.792C404.459 270.695 411.484 267.549 419.234 267.549C426.986 267.549 434.01 270.695 439.153 275.792C442.29 273.48 445.023 270.638 447.225 267.393Z"=/>
+          <path id="circle-left" fill-rule="evenodd" clip-rule="evenodd" d="M380.483 286.528C377.991 296.473 379.161 307.373 384.606 316.961C390.052 326.55 398.756 333.028 408.474 335.807C410.138 332.247 411.192 328.421 411.593 324.502C404.679 322.524 398.487 317.912 394.611 311.09C390.735 304.266 389.903 296.51 391.674 289.434C388.135 287.828 384.349 286.843 380.483 286.528Z"/>
+          <path id="circle-right" fill-rule="evenodd" clip-rule="evenodd" d="M457.986 286.528C460.477 296.473 459.308 307.373 453.862 316.961C448.416 326.55 439.712 333.028 429.993 335.807C428.33 332.247 427.275 328.421 426.874 324.502C433.79 322.524 439.982 317.912 443.857 311.09C447.732 304.266 448.566 296.51 446.794 289.434C450.333 287.828 454.119 286.843 457.986 286.528Z"/>
+        </g>
+        </svg>
+
+      <button id="introBtn">Proceed...</button>
+      
+  </div>
+
+<!-- ============================================================================== -->
+
   <body>
-    <div id="contagionCanvasDiv">
-      <canvas id="contagionCanvas" style="background-color: #333;"></canvas>
-    </div>
 
-    <div id="buttonDiv">
-      <button id="pause">|| ></button>
-    </div>
+    <div id="content-wrapper">
+      <div id="canvas-wrapper">
+        <div id="contagion-canvas-div" title="This is the default contagion scenario">
+          <canvas id="contagion-canvas" style="background-color: #333;"></canvas>
+          <!--<div id="avgContaminations" style="background-color: white;">Average contaminations per person:&nbsp;<span id="avgCont"></span></div>-->
+        </div>
 
-    <div id="chartCanvasDiv">
-      <canvas id="chartCanvas"></canvas>
+        <div id="arrow"><span id="right-arrow">&#10132;</span><span id="down-arrow">&#129047;</spane></div>
+
+        <div id="contagion-canvas-div-corrected" title="This is your corrected contagion scenario">
+          <canvas
+            id="contagion-canvas-corrected"
+            style="background-color: #333;"
+          ></canvas>
+          <!--<div id="avgContaminationsAlt" style="background-color: white;">Average contaminations per person:&nbsp;<span id="avgContAlt"></span></div>-->
+        </div>
+      </div>
+
+      <!-- =============================================================================================================== -->
+
+      <div id="chart-controls-div">
+
+        <div id="chart-canvas-div"
+        title="Click on legend items to view or hide line data.
+Values are displayed in percentages of total population.">
+          <canvas id="chart-canvas"></canvas>
+        </div>
+
+        <!--<div class="buttonDiv">
+            <button id="pause">|| ></button>
+          </div>-->
+          
+        <div id="sim-controls">
+
+          <div class="input-div" id="personal-decontamination"
+          title="The chance that each person will wash their hands,
+change their clothes, etc., after a certain amount of time.">
+            <label for="personal-decontamination"
+              >Simulate<br> Personal Decontamination (%)</label
+            >
+            <input
+              type="number"
+              name="personal-decontamination"
+              id="personal-decontamination-input"
+              min="0"
+              max="100"
+              step="1"
+              value="0"
+            />
+          </div>
+
+        <!--<div class="input-div">
+            <label for="timeUntilWashHandsCorrected">Time Until Decontamination</label>
+            <input type="number" name="timeUntilWashHandsCorrected" id="timeUntilWashHandsCorrected" min="0" max="30" step="0.5" value="0.5">
+          </div>
+          
+          <div class="input-div">
+            <label for="timeUntilInfectedCorrected">Time Until Infection</label>
+            <input type="number" name="timeUntilInfectedCorrected" id="timeUntilInfectedCorrected" min="0" max="30" step="0.5" value="1.5">
+          </div>
+
+          <div class="input-div">
+            <label for="timeUntilRemovedCorrected">Time Until Recovery or Death</label>
+            <input type="number" name="timeUntilRemovedCorrected" id="timeUntilRemovedCorrected" min="0" max="1" step="0.5" value="2">
+          </div>-->
+
+          <div class="input-div" id="social-distancing-div"
+          title="Simulates physical proximity of individuals.
+Lower values mean more social distancing.
+This value shouldn't be changed while simulation is running.">
+            <label for="social-distancing">Simulate<br> Social Proximity (%)&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
+            <input
+              type="number"
+              name="social-distancing"
+              id="social-distancing"
+              min="0"
+              max="100"
+              step="1"
+              value="100"
+            />
+          </div>
+
+        <div class="start-sim-div">
+          <button id="start-sim-btn">Start Simulation</button>
+        </div>
+      </div>
+
+        <div id="mortality-wrapper"
+        title="Mortality rates by age group according to
+the Portuguese Health General Directorate on April 2nd 2020.">
+          <ul id="mortality-list">
+            <li class="input-div">
+              <label for="mortality-rate-zeroes"
+                >Mortality %: &nbsp;0 - 09 years old</label
+              >
+              <input
+                type="number"
+                name="mortality-rate-zeroes"
+                id="mortality-rate-zeroes"
+                min="0"
+                max="100"
+                step="0.01"
+                value="0"
+              />
+            </li>
+            <li class="input-div">
+              <label for="mortality-rate-tens"
+                >Mortality %: 10 - 19 years old</label
+              >
+              <input
+                type="number"
+                name="mortality-rate-tens"
+                id="mortality-rate-tens"
+                min="0"
+                max="100"
+                step="0.01"
+                value="0"
+              />
+            </li>
+            <li class="input-div">
+              <label for="mortality-rate-twenties"
+                >Mortality %: 20 - 29 years old</label
+              >
+              <input
+                type="number"
+                name="mortality-rate-twenties"
+                id="mortality-rate-twenties"
+                min="0"
+                max="100"
+                step="0.01"
+                value="0"
+              />
+            </li>
+            <li class="input-div">
+              <label for="mortality-rate-thirties"
+                >Mortality %: 30 - 39 years old</label
+              >
+              <input
+                type="number"
+                name="mortality-rate-thirties"
+                id="mortality-rate-thirties"
+                min="0"
+                max="100"
+                step="0.01"
+                value="0"
+              />
+            </li>
+            <li class="input-div">
+              <label for="mortality-rate-forties"
+                >Mortality %: 40 - 49 years old</label
+              >
+              <input
+                type="number"
+                name="mortality-rate-forties"
+                id="mortality-rate-forties"
+                min="0"
+                max="100"
+                step="0.01"
+                value="0.12"
+              />
+            </li>
+            <li class="input-div">
+              <label for="mortality-rate-fifties"
+                >Mortality %: 50 - 59 years old</label
+              >
+              <input
+                type="number"
+                name="mortality-rate-fifties"
+                id="mortality-rate-fifties"
+                min="0"
+                max="100"
+                step="0.01"
+                value="0.49"
+              />
+            </li>
+            <li class="input-div">
+              <label for="mortality-rate-sixties"
+                >Mortality %: 60 - 69 years old</label
+              >
+              <input
+                type="number"
+                name="mortality-rate-sixties"
+                id="mortality-rate-sixties"
+                min="0"
+                max="100"
+                step="0.01"
+                value="1.46"
+              />
+            </li>
+            <li class="input-div">
+              <label for="mortality-rate-seventies"
+                >Mortality %: 70 - 79 years old</label
+              >
+              <input
+                type="number"
+                name="mortality-rate-seventies"
+                id="mortality-rate-seventies"
+                min="0"
+                max="100"
+                step="0.01"
+                value="5.04"
+              />
+            </li>
+            <li class="input-div">
+              <label for="mortality-rate-eighties"
+                >Mortality %:&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;80+ years old</label
+              >
+              <input
+                type="number"
+                name="mortality-rate-eighties"
+                id="mortality-rate-eighties"
+                min="0"
+                max="100"
+                step="0.01"
+                value="12.63"
+              />
+            </li>
+          </ul>
+        </div>
+
+        
+      
     </div>
 
     <script src="script.js"></script>
