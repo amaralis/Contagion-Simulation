@@ -350,7 +350,7 @@ const addChar = function (arr, para) {
 };
 setTimeout(() => {
   addChar(introTextArr, introPara);
-}, 3500);
+}, 3000);
 
 /** Intro button handler */
 
