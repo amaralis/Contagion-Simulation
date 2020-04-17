@@ -456,7 +456,7 @@ li {
   display: flex;
   justify-content: space-evenly;
   margin: 0 1rem;
-  /*background-color: yellow;*/
+  min-height: 420px;
 }
 
 #chart-canvas-div {
