@@ -1916,9 +1916,15 @@ class Agent {
   };
 
   startRemovedTimer = function () {
-    this.removedInterval = setTimeout(() => {
-      this.removeAgent();
-    }, timeUntilRemoved);
+    if (this != seedAgent) {
+      this.removedInterval = setTimeout(() => {
+        this.removeAgent();
+      }, timeUntilRemoved);
+    } else {
+      this.removedInterval = setTimeout(() => {
+        this.removeAgent();
+      }, 20000);
+    }
   };
 
   startAgentTimers = function () {
@@ -2217,9 +2223,15 @@ class AgentCorrected {
   };
 
   startRemovedTimer = function () {
-    this.removedInterval = setTimeout(() => {
-      this.removeAgent();
-    }, timeUntilRemovedCorrected);
+    if (this != seedAgentCorrected) {
+      this.removedInterval = setTimeout(() => {
+        this.removeAgent();
+      }, timeUntilRemovedCorrected);
+    } else {
+      this.removedInterval = setTimeout(() => {
+        this.removeAgent();
+      }, 20000);
+    }
   };
 
   startAgentTimers = function () {
