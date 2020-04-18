@@ -46,7 +46,7 @@
 
 #intro {
   max-width: 70vw;
-  text-align: justify;
+  text-align: center;
   padding: 1.6rem;
   z-index: 11;
   text-shadow: 0px 0px 3px black;
@@ -415,6 +415,7 @@ li {
   border: 1px solid green;
   min-width: 650px;
   min-height: 312px;
+  cursor: help;
 }
 
 #arrow {
@@ -431,6 +432,7 @@ li {
   border: 1px solid green;
   min-width: 650px;
   min-height: 312px;
+  cursor: help;
 }
 
 /*==========================================================*/
@@ -469,6 +471,7 @@ li {
   padding-bottom: 30px;
   padding-left: 1rem;
   padding-right: 1rem;
+  cursor: help;
 }
 
 #sim-controls {
@@ -485,6 +488,14 @@ li {
 #sim-controls div {
   padding: 1rem;
   margin: 0.5rem;
+}
+
+#personal-decontamination label {
+  cursor: help;
+}
+
+#social-distancing-div label {
+  cursor: help;
 }
 
 #start-sim-btn {
@@ -537,6 +548,11 @@ li {
 
 #mortality-list li {
   height: 2rem;
+  cursor: help;
+}
+
+#mortality-list li label {
+  cursor: help;
 }
 
 /*==================================================================================*/

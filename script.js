@@ -325,18 +325,36 @@ const biohazardDiv = document.querySelector("#biohazard");
 const introPara = document.querySelector("#intro");
 const introBtn = document.querySelector("#introBtn");
 let introSVG = document.querySelector("#biohazard-svg");
+const contagionCanvasDiv = document.querySelector("#contagion-canvas-div");
+const contagionCanvasDivCorrected = document.querySelector(
+  "#contagion-canvas-div-corrected"
+);
 
 /*const avgContaminations = document.querySelector("#avgCont");
 const avgContaminationsAlt = document.querySelector("#avgContAlt");*/
 
 /** ========================== HTML handlers and stuff ========================== */
 
+/** Draw quadtrees */
+
+contagionCanvasDiv.onclick = function () {
+  contagionCanvas.classList.toggle("show-quadtree");
+};
+contagionCanvasDivCorrected.onclick = function () {
+  contagionCanvasCorrected.classList.toggle("show-quadtree");
+};
+
+function showQuadtree(canvas) {
+  console.log("click");
+  canvas.classList.toggle("show-quadtree");
+}
+
 /** Intro text animation */
 
 document.body.style.overflow = "hidden";
 
 const introText =
-  "Welcome to my first project. The coding on display here is amateurish at best, and the layout may appear broken on some devices. Don't even try it on Edge and Internet Explorer. It may run slow on your device, as the simulation presented is resource-intensive and relies on a solid framerate (yes, that one's on me, mea culpa). It is intended to be an exercise in javascript and data manipulation during my time in social isolation, with the bare minimum styling required. Accessibility, cross-browser compatibility, and code modularity could not be achieved, as I am still in the process of learning. Population data such as age and mortality rates by Covid-19 are accurately portrayed from official Portuguese sources, such as the census, or the Health General Directorate. Enjoy your visit and make sure to play around with the numbers!";
+  "Welcome to my first project. The coding on display here is amateurish at best, and the layout may appear broken on some devices. Don't even try it on Edge and Internet Explorer. It may run slow on your device, as the simulation presented is resource-intensive and relies on a solid framerate (yes, that one's on me, mea culpa). It is intended to be an exercise in javascript and data manipulation during my time in social isolation, with the bare minimum styling required. Accessibility, cross-browser compatibility, and code modularity could not be achieved, as I am still in the process of learning all the things and, in any case, that's not this project's goal. Population data such as age and mortality rates by Covid-19 are accurately portrayed from official Portuguese sources, such as the census, or the Health General Directorate. Enjoy your visit and make sure to play around with the numbers!";
 
 const introTextArr = [...introText];
 
@@ -349,7 +367,7 @@ const addChar = function (arr, para) {
     } else {
       clearInterval(timer);
     }
-  }, 25);
+  }, 15);
 };
 setTimeout(() => {
   addChar(introTextArr, introPara);
@@ -2375,14 +2393,18 @@ function draw() {
   quadTreeArrayNotDividedCorrected = [];
 
   quadTreeArray.forEach((quadtree) => {
-    //quadtree.draw();
+    if (contagionCanvas.classList.contains("show-quadtree")) {
+      quadtree.draw();
+    }
     if (!quadtree.isDivided) {
       quadTreeArrayNotDivided.push(quadtree);
     }
   });
 
   quadTreeArrayCorrected.forEach((quadtree) => {
-    //quadtree.draw();
+    if (contagionCanvasCorrected.classList.contains("show-quadtree")) {
+      quadtree.draw();
+    }
     if (!quadtree.isDivided) {
       quadTreeArrayNotDividedCorrected.push(quadtree);
     }
