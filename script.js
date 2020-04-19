@@ -44,7 +44,6 @@ let chart = new Chart(ctxChart, {
         /** [0] */
         label: "Total susceptible",
         hidden: true,
-        //backgroundColor: "rgb(255, 99, 132)",
         borderColor: "rgb(0, 255, 255)",
         data: [],
       },
@@ -52,7 +51,6 @@ let chart = new Chart(ctxChart, {
         /** [1] */
         label: "Total contaminated",
         hidden: true,
-        //backgroundColor: "rgb(255, 99, 132)",
         borderColor: "rgb(255, 185, 0)",
         data: [],
       },
@@ -60,7 +58,6 @@ let chart = new Chart(ctxChart, {
         /** [2] */
         label: "New contaminated",
         hidden: true,
-        //backgroundColor: "rgb(255, 99, 132)",
         borderColor: "rgb(255, 255, 50)",
         data: [],
       },
@@ -68,14 +65,12 @@ let chart = new Chart(ctxChart, {
         /** [3] */
         label: "Total infected",
         hidden: true,
-        //backgroundColor: "rgb(255, 99, 132)",
         borderColor: "rgb(255, 0, 0)",
         data: [],
       },
       {
         /** [4] */
         label: "New infected",
-        //backgroundColor: "rgb(255, 99, 132)",
         borderColor: "rgb(255, 115, 0)",
         data: [],
       },
@@ -83,69 +78,60 @@ let chart = new Chart(ctxChart, {
         /** [5] */
         label: "Total removed",
         hidden: true,
-        //backgroundColor: "rgb(255, 99, 132)",
-        borderColor: "rgb(150, 150, 150)",
+        borderColor: "rgb(190, 190, 190)",
         data: [],
       },
       {
         /** [6] */
         label: "Total deceased",
-        //backgroundColor: "rgb(255, 99, 132)",
         borderColor: "rgb(190, 0, 0)",
         data: [],
       },
       {
         /** [7] */
-        label: "Total infected alt.",
+        label: "Your total infected",
         hidden: true,
-        //backgroundColor: "rgb(255, 99, 132)",
-        borderColor: "rgb(0, 200, 200)",
+        borderColor: "rgb(100, 150, 125)",
         data: [],
       },
       {
         /** [8] */
-        label: "New infected alt.",
-        //backgroundColor: "rgb(255, 99, 132)",
+        label: "Your new infected",
         borderColor: "rgb(0, 200, 120)",
         data: [],
       },
       {
         /** [9] */
-        label: "Total removed alt.",
+        label: "Your total removed",
         hidden: true,
-        //backgroundColor: "rgb(255, 99, 132)",
-        borderColor: "rgb(120, 120, 120)",
+        borderColor: "rgb(100, 100, 100)",
         data: [],
       },
       {
         /** [10] */
-        label: "Total deceased alt.",
-        //backgroundColor: "rgb(255, 99, 132)",
+        label: "Your total deceased",
         borderColor: "rgb(190, 0, 130)",
         data: [],
       },
       {
         /** [11] */
-        label: "Total susceptible alt.",
+        label: "Your total susceptible",
         hidden: true,
-        //backgroundColor: "rgb(255, 99, 132)",
         borderColor: "rgb(235, 235, 0)",
         data: [],
       },
       {
         /** [12] */
-        label: "Total contaminated alt.",
+        label: "Your total contaminated",
         hidden: true,
-        //backgroundColor: "rgb(255, 99, 132)",
         borderColor: "rgb(150, 80, 0)",
         data: [],
       },
       {
         /** [13] */
-        label: "New contaminated alt.",
+        label: "Your new contaminated",
         hidden: true,
-        //backgroundColor: "rgb(255, 99, 132)",
-        borderColor: "rgb(10, 10, 10)",
+        borderColor: "rgb(10,10,10)",
         data: [],
       },
     ],
@@ -937,47 +923,47 @@ createChart = function () {
         },
         {
           /** [7] */
-          label: "Total infected alt.",
+          label: "Your total infected",
           hidden: true,
           borderColor: "rgb(100, 150, 125)",
           data: [],
         },
         {
           /** [8] */
-          label: "New infected alt.",
+          label: "Your new infected",
           borderColor: "rgb(0, 200, 120)",
           data: [],
         },
         {
           /** [9] */
-          label: "Total removed alt.",
+          label: "Your total removed",
           hidden: true,
           borderColor: "rgb(100, 100, 100)",
           data: [],
         },
         {
           /** [10] */
-          label: "Total deceased alt.",
+          label: "Your total deceased",
           borderColor: "rgb(190, 0, 130)",
           data: [],
         },
         {
           /** [11] */
-          label: "Total susceptible alt.",
+          label: "Your total susceptible",
           hidden: true,
           borderColor: "rgb(235, 235, 0)",
           data: [],
         },
         {
           /** [12] */
-          label: "Total contaminated alt.",
+          label: "Your total contaminated",
           hidden: true,
           borderColor: "rgb(150, 80, 0)",
           data: [],
         },
         {
           /** [13] */
-          label: "New contaminated alt.",
+          label: "Your new contaminated",
           hidden: true,
           borderColor: "rgb(10,10,10)",
           data: [],
