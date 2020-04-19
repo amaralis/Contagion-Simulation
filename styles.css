@@ -818,6 +818,7 @@ li {
   }
 
   #modal p {
+    text-align: left;
     margin: 1.6rem;
   }
 }
