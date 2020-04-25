@@ -14,3 +14,5 @@ Conditions under which this code may **not** be used and/or distributed:
 Any entity may request changes to the conditions in this document. If the original copyright holder explicitly agrees to those changes, a new license agreement is celebrated, and those changes reflect only upon the entity that requested them. No other entity may claim to use the new license emanated from those changes, unless the original copyright holder explicitly agrees.
 
 This license does not grant any rights to this code other than the right to usage and distribution under the stated conditions.
+
+This code is provided as is, with no warranty of any kind. The original copyright holder is not responsible or liable for any claim, damage, or other liability arising from, or in any way connected to, the usage of this code, whether partially, or in its entirety.
