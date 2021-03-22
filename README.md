@@ -13,7 +13,7 @@ You can play around with this project at https://amaralis.github.io/Contagion-Si
 - [X] To present simulated data to the user and give them control over data points
 - [X] To spread awareness about the dangers of exponential disease spread
 - [X] To make an awesome CSS animation with SVGs, because I like the biohazard symbol thingy
-- [] To make a proper modal window
+- [ ] To make a proper modal window
 
 ## What I learned from this project
 
