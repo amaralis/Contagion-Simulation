@@ -14,6 +14,7 @@ You can play around with this project at https://amaralis.github.io/Contagion-Si
 - [X] To spread awareness about the dangers of exponential disease spread
 - [X] To make an awesome CSS animation with SVGs, because I like the biohazard symbol thingy
 - [ ] To make a proper modal window
+- [ ] To use Git properly
 
 ## What I learned from this project
 
@@ -25,3 +26,4 @@ You can play around with this project at https://amaralis.github.io/Contagion-Si
 * How to refer to documentation in order to use a library or other resource. Up until this point I had gone to great pains, googling everything under the Sun, from electric circuits to wireless networks, to understand the stuff on Mozilla Developers Network; It was worth it. But everything else, I relied on youtube tutorials and udemy courses. So for this project, I decided I would use a library and refer to its documentation without video tutorials. I grew a lot back then.
 * How to write spaghetti code
   * Looking back at this project, I have to admit my chances at writing clean, maintainable code at the time were fewer than zero. But the concern remains.
+* Git saves lives, even for a newbie who can barely git add . git commit -m without googling the syntax
