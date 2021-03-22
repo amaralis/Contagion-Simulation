@@ -17,6 +17,7 @@ You can play around with this project at https://amaralis.github.io/Contagion-Si
 
 ## What I learned from this project
 
+* What meta tags are and how they work. An unexpected benefit, arisen only because I wanted a little preview thumbnail on Discord... I couldn't get it to work on Discord, but Twitter and Facebook worked fine!
 * How to use the html5 canvas
 * How *not* to run a simulation (looking at you, setTimeout and setInterval... how could I have known you're some sort of hybrid monstrosity browser API that's completely unrelated to my animation loop?)
 * How to build and use a quadtree
