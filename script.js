@@ -547,7 +547,6 @@ startSimBtn.addEventListener("click", () => {
             ageGroup.mortalityRate
           ))
         );
-        console.log(ageGroup.mortalityRate);
         numberOfAgentsCorrected.push(tempAgentCorrected);
       }
     });
@@ -578,13 +577,8 @@ startSimBtn.addEventListener("click", () => {
     contaminatedArrCorrected.push(seedAgentCorrected);
     seedAgentCorrected.startAgentTimers();
 
-    console.log(`Agents in original context: ${numberOfAgents.length};
-    Agents in corrected context: ${numberOfAgentsCorrected.length}`);
 
     startSimBtn.classList.toggle("clicked");
-    popDistByAgeArrCorrected.forEach((ageGroup) => {
-      console.log(ageGroup.mortalityRate);
-    });
   } else {
     popDistByAgeArrCorrected.forEach((ageGroup) => {
       console.log(ageGroup.mortalityRate);
@@ -2309,7 +2303,7 @@ function draw() {
     });
   });
 
-  updateFrames();
+  // updateFrames();
 
   requestAnimationFrame(draw);
 }

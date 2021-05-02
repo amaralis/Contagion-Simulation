@@ -7,6 +7,14 @@ This is my first project. It is intended to be an exercise in javascript. It is 
 
 ![Demo screenshot](screenshot.png)
 
+## How to use
+
+* Hover over each input's description for a helpful popup with further explanation of what it means
+* Change personal decontamination and social proximity values to observe how contagion occurs in the second canvas, when compared to the first one.
+* Click on the legend items above the graph to toggle visualization of different data.
+  * The legend items with "Your" refer to the second canvas, where the values you input are used (for example, a 50% chance that people will take decontamination measures shortly after being contaminated)
+  * By default, the graph displays new infected agents for the current tick, and "your" new infected agents, which is already enough to visualize how the contamination curve flattens when some simple measures are taken to reduce disease spread
+
 ## What I proposed to achieve with this project
 
 - [X] To build a quadtree
