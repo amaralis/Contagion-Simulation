@@ -5,6 +5,8 @@ This is my first project. It is intended to be an exercise in javascript. It is 
 
 [Live Website](https://amaralis.github.io/Contagion-Simulation/)
 
+![Demo screenshot](screenshot.png)
+
 ## What I proposed to achieve with this project
 
 - [X] To build a quadtree
