@@ -159,19 +159,19 @@ chart.canvas.parentNode.style.height = `${chartHeight.toString()}px`;
 
 /** ================== Log framerate (don't forget to updateFrames() before requestAnimation(draw())) ================== */
 
-let fps = 0;
-const updateFrames = function () {
-  fps++;
-};
+// let fps = 0;
+// const updateFrames = function () {
+//   fps++;
+// };
 
-const refreshFrames = function () {
-  fps = 0;
-};
+// const refreshFrames = function () {
+//   fps = 0;
+// };
 
-const logFrameRate = setInterval(() => {
-  console.log(`Frames per second = ${fps}`);
-  refreshFrames();
-}, 1000);
+// const logFrameRate = setInterval(() => {
+//   console.log(`Frames per second = ${fps}`);
+//   refreshFrames();
+// }, 1000);
 
 /** ========================== Global vars ========================== */
 
@@ -230,20 +230,7 @@ const startSimBtn = document.querySelector("#start-sim-btn");
 const washHandsProbabilityInput = document.querySelector(
   "#personal-decontamination-input"
 );
-// const timeUntilWashHandsCorrectedInput = document.querySelector(
-//   "#timeUntilWashHandsCorrected"
-// );
-// const timeUntilInfectedCorrectedInput = document.querySelector(
-//   "#timeUntilInfectedCorrected"
-// );
-// const timeUntilRemovedCorrectedInput = document.querySelector(
-//   "#timeUntilRemovedCorrected"
-// );
 const socialDistancingInput = document.querySelector("#social-distancing");
-
-// const toggleMortalityRates = document.querySelector("#mortalityRates");
-// const mortalityRates = document.querySelector("#mortality-list");
-// const mortalityRatesLi = document.querySelector(".input-div");
 
 const mortalityRateZeroesInput = document.querySelector(
   "#mortality-rate-zeroes"
@@ -316,9 +303,6 @@ const contagionCanvasDivCorrected = document.querySelector(
   "#contagion-canvas-div-corrected"
 );
 
-/*const avgContaminations = document.querySelector("#avgCont");
-const avgContaminationsAlt = document.querySelector("#avgContAlt");*/
-
 /** ========================== HTML handlers and stuff ========================== */
 
 /** Draw quadtrees */
@@ -340,7 +324,7 @@ function showQuadtree(canvas) {
 document.body.style.overflow = "hidden";
 
 const introText =
-  "Welcome to my first project. The coding on display here is amateurish at best, and the layout may appear broken on some devices. Don't even try it on Edge and Internet Explorer. It may run slow on your device, as the simulation presented is resource-intensive and relies on a solid framerate (yes, that one's on me, mea culpa). It is intended to be an exercise in javascript and data manipulation during my time in social isolation, with the bare minimum styling required. Accessibility, cross-browser compatibility, and code modularity could not be achieved, as I am still in the process of learning all the things and, in any case, that's not this project's goal. Population data such as age and mortality rates by Covid-19 are accurately portrayed from official Portuguese sources, such as the census, or the Health General Directorate. Enjoy your visit and make sure to play around with the numbers!";
+  "Welcome to my first project. The coding on display here is amateurish at best, and the layout may appear broken on some devices. Don't even try it on Edge and Internet Explorer. It may run slow on your device, as the simulation presented is resource-intensive and relies on a solid framerate (yes, that one's on me, mea culpa). It is intended to be an exercise in javascript and data manipulation during my time in social isolation, with bare minimum styling. Accessibility, cross-browser compatibility, and code modularity could not be achieved, as I am still in the process of learning all the things and, in any case, that's not this project's goal. Population data such as age and mortality rates by Covid-19 are accurately portrayed from official Portuguese sources, such as the census, or the Health General Directorate. Enjoy your visit and make sure to play around with the numbers!";
 
 const introTextArr = [...introText];
 
@@ -386,36 +370,6 @@ washHandsProbabilityInput.onchange = function () {
   console.log(`${washHandsProbabilityInput.value}`);
   console.log(`${washHandsProbabilityCorrected}`);
 };
-
-/*timeUntilWashHandsCorrectedInput.onchange = function () {
-  if (timeUntilWashHandsCorrectedInput.value > 30) {
-    timeUntilWashHandsCorrectedInput.value = 30;
-  } else if (timeUntilWashHandsCorrectedInput.value < 0) {
-    timeUntilWashHandsCorrectedInput.value = 0;
-  }
-
-  timeUntilWashHandsCorrected = timeUntilWashHandsCorrectedInput.value * 1000;
-};
-
-timeUntilInfectedCorrectedInput.onchange = function () {
-  if (timeUntilInfectedCorrectedInput.value > 30) {
-    timeUntilInfectedCorrectedInput.value = 30;
-  } else if (timeUntilInfectedCorrectedInput.value < 0) {
-    timeUntilInfectedCorrectedInput.value = 0;
-  }
-
-  timeUntilInfectedCorrected = timeUntilInfectedCorrectedInput.value * 1000;
-};
-
-timeUntilRemovedCorrectedInput.onchange = function () {
-  if (timeUntilRemovedCorrectedInput.value > 30) {
-    timeUntilRemovedCorrectedInput.value = 30;
-  } else if (timeUntilRemovedCorrectedInput.value < 0) {
-    timeUntilRemovedCorrectedInput.value = 0;
-  }
-
-  timeUntilRemovedCorrected = timeUntilRemovedCorrectedInput.value * 1000;
-};*/
 
 socialDistancingInput.onchange = function () {
   if (socialDistancingInput.value > 100) {
@@ -543,7 +497,7 @@ startSimBtn.addEventListener("click", () => {
       susceptibleArr.push(agent);
     });
 
-    /** Seed agent */
+    /* Seed agent */
 
     quadtreeRoot.population.push(
       (seedAgent = new Agent(
@@ -566,7 +520,6 @@ startSimBtn.addEventListener("click", () => {
     contaminatedArr.push(seedAgent);
     seedAgent.startAgentTimers();
 
-    // console.log(`Agents in original context: ${numberOfAgents.length};
     // Agents in corrected context: ${numberOfAgentsCorrected.length}`);
 
     // Corrected canvas
@@ -601,10 +554,8 @@ startSimBtn.addEventListener("click", () => {
     quadtreeRootCorrected.population.forEach((agent) => {
       susceptibleArrCorrected.push(agent);
     });
-    // console.log(`Agents corrected: ${numberOfAgentsCorrected.length}`);
-    // console.log(`Agents array corrected: ${susceptibleArrCorrected.length}`);
 
-    /** Seed agent */
+    /* Seed agent */
 
     quadtreeRootCorrected.population.push(
       (seedAgentCorrected = new AgentCorrected(
@@ -834,8 +785,6 @@ spawnCorrectedAgents = function () {
   quadtreeRootCorrected.population.forEach((agent) => {
     susceptibleArrCorrected.push(agent);
   });
-  // console.log(`Agents corrected: ${numberOfAgentsCorrected.length}`);
-  // console.log(`Agents array corrected: ${susceptibleArrCorrected.length}`);
 
   /** Seed agent */
 
@@ -1194,23 +1143,14 @@ let popDistByAgeArr = [
 ];
 
 zeroesCorrected = new AgeGroup(0.087, 1, 9, mortalityRateZeroes);
-//popDistByAgeCorrectedArr.push(zeroes);
 tensCorrected = new AgeGroup(0.1037, 10, 19, mortalityRateTens);
-//popDistByAgeCorrectedArr.push(tens);
 twentiesCorrected = new AgeGroup(0.1056, 20, 29, mortalityRateTwenties);
-//popDistByAgeCorrectedArr.push(twenties);
 thirtiesCorrected = new AgeGroup(0.1243, 30, 39, mortalityRateThirties);
-//popDistByAgeCorrectedArr.push(thirties);
 fortiesCorrected = new AgeGroup(0.15, 40, 49, mortalityRateForties);
-//popDistByAgeCorrectedArr.push(forties);
 fiftiesCorrected = new AgeGroup(0.1436, 50, 59, mortalityRateFifties);
-//popDistByAgeCorrectedArr.push(fifties);
 sixtiesCorrected = new AgeGroup(0.1247, 60, 69, mortalityRateSixties);
-//popDistByAgeCorrectedArr.push(sixties);
 seventiesCorrected = new AgeGroup(0.092, 70, 79, mortalityRateSeventies);
-//popDistByAgeCorrectedArr.push(seventies);
 eightiesPlusCorrected = new AgeGroup(0.063, 80, 89, mortalityRateEighties);
-//popDistByAgeCorrectedArr.push(eightiesPlus);
 
 let popDistByAgeArrCorrected = [
   zeroesCorrected,
@@ -1370,15 +1310,7 @@ class Timer {
       averageContaminationsPerAgent =
         totalContaminations / numberOfAgents.length;
 
-      averageContaminationsPerAgentCorrected =
-        totalContaminationsCorrected / numberOfAgentsCorrected.length;
-
-      /*avgContaminations.innerText = `${averageContaminationsPerAgent.toFixed(
-        2
-      )}`;
-      avgContaminationsAlt.innerText = `${averageContaminationsPerAgentCorrected.toFixed(
-        2
-      )}`;*/
+      averageContaminationsPerAgentCorrected = totalContaminationsCorrected / numberOfAgentsCorrected.length;
 
       previousContaminated = contaminatedArr.length;
       previousInfected = infectedArr.length;
@@ -1391,20 +1323,6 @@ class Timer {
 }
 
 myTimer = new Timer(timestep);
-
-/** ========================== Pause feature for main draw() and chart timer ========================== */
-
-// const pauseButton = document.querySelector("#pause");
-// pauseButton.addEventListener("click", () => {
-//   pauseButton.classList.toggle("paused");
-
-//   if (!pauseButton.classList.contains("paused")) {
-//     myTimer.setTimer("start");
-//     draw();
-//   } else {
-//     myTimer.toggleTimer("stop");
-//   }
-// });
 
 /** ========================== Quadtree class ========================== */
 
@@ -1434,7 +1352,6 @@ class Quadtree {
 
   update = function () {
     if (this.population.length >= this.populationCap) {
-      // console.log("Dividing tree and deleting agents from parent")
       this.isDivided = true;
 
       this.northwest = new Quadtree(
@@ -1520,7 +1437,7 @@ class Quadtree {
           this.southeast.population.push(this.population[0]);
           this.population.shift();
         } else {
-          console.log(`MESSED UP POPULATION SHIFT IN QUADTREES`);
+          console.log(`Error pushing population into quadtrees`);
         }
       }
 
@@ -1576,7 +1493,6 @@ class QuadtreeCorrected {
 
   update = function () {
     if (this.population.length >= this.populationCap) {
-      // console.log("Dividing tree and deleting agents from parent")
       this.isDivided = true;
 
       this.northwest = new QuadtreeCorrected(
@@ -1662,7 +1578,7 @@ class QuadtreeCorrected {
           this.southeast.population.push(this.population[0]);
           this.population.shift();
         } else {
-          console.log(`MESSED UP POPULATION SHIFT IN QUADTREES`);
+          console.log(`Error pushing population into quadtrees`);
         }
       }
 
@@ -1722,20 +1638,6 @@ class Agent {
     this.age = age;
     this.mortalityRate = mortalityRate;
     this.contaminatedOthers = 0;
-
-    // this.removedTimeFromStart = 0;
-    // this.removedStartTime;
-    // this.remainingTimeRemoved = timeUntilRemoved;
-
-    // this.infectedTimeFromStart = 0;
-    // this.infectedStartTime;
-    // this.remainingTimeInfected = timeUntilInfected;
-    // this.infectedInterval;
-
-    // this.washHandsTimeFromStart = 0;
-    // this.washHandsStartTime;
-    // this.remainingTimeWashHands = timeUntilWashHands;
-    // this.washHandsInterval;
 
     this.neighbors = [];
     this.neighboringQuadtrees = [];
@@ -2353,26 +2255,21 @@ function draw() {
     }
   });
 
-  // console.log(`Clearing quadtree array`)
   quadTreeArray = [];
   quadTreeArrayCorrected = [];
-  // console.log(`Pushing root into quadtree array`)
   quadTreeArray.push(quadtreeRoot);
   quadTreeArrayCorrected.push(quadtreeRootCorrected);
 
   quadtreeRoot.population.forEach((agent) => {
-    // console.log("Updating agents from quadtree Root population")
     agent.update();
     agent.draw();
   });
 
   quadtreeRootCorrected.population.forEach((agent) => {
-    // console.log("Updating agents from corrected quadtree Root population")
     agent.update();
     agent.draw();
   });
 
-  // console.log(`Updating root quadtree`)
   quadtreeRoot.update();
   quadTreeArrayNotDivided = [];
   quadtreeRootCorrected.update();

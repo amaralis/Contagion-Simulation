@@ -11,6 +11,7 @@
     <meta property="og:site_name" content="Contagion Simulation">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <link rel="stylesheet" type="text/css" href="styles.css" />
+    <link rel="shortcut icon" type="image/png" href="ico.png" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
     <title>Contagion Simulation</title>
@@ -63,7 +64,6 @@
         <div id="contagion-canvas-div" title="This is the default contagion scenario.
 Click to show real-time quadtree.">
           <canvas id="contagion-canvas" style="background-color: #333;"></canvas>
-          <!--<div id="avgContaminations" style="background-color: white;">Average contaminations per person:&nbsp;<span id="avgCont"></span></div>-->
         </div>
 
         <div id="arrow"><span id="right-arrow">&#10132;</span><span id="down-arrow">&#129047;</spane></div>
@@ -75,7 +75,6 @@ Social Proximity of 60% and below.)">
             id="contagion-canvas-corrected"
             style="background-color: #333;"
           ></canvas>
-          <!--<div id="avgContaminationsAlt" style="background-color: white;">Average contaminations per person:&nbsp;<span id="avgContAlt"></span></div>-->
         </div>
       </div>
 
@@ -88,10 +87,6 @@ Social Proximity of 60% and below.)">
 Values are displayed in percentages of total population.">
           <canvas id="chart-canvas"></canvas>
         </div>
-
-        <!--<div class="buttonDiv">
-            <button id="pause">|| ></button>
-          </div>-->
           
         <div id="sim-controls">
 
@@ -111,21 +106,6 @@ change their clothes, etc., after a certain amount of time.">
               value="0"
             />
           </div>
-
-        <!--<div class="input-div">
-            <label for="timeUntilWashHandsCorrected">Time Until Decontamination</label>
-            <input type="number" name="timeUntilWashHandsCorrected" id="timeUntilWashHandsCorrected" min="0" max="30" step="0.5" value="0.5">
-          </div>
-          
-          <div class="input-div">
-            <label for="timeUntilInfectedCorrected">Time Until Infection</label>
-            <input type="number" name="timeUntilInfectedCorrected" id="timeUntilInfectedCorrected" min="0" max="30" step="0.5" value="1.5">
-          </div>
-
-          <div class="input-div">
-            <label for="timeUntilRemovedCorrected">Time Until Recovery or Death</label>
-            <input type="number" name="timeUntilRemovedCorrected" id="timeUntilRemovedCorrected" min="0" max="1" step="0.5" value="2">
-          </div>-->
 
           <div class="input-div" id="social-distancing-div"
           title="Simulates physical proximity of individuals.
